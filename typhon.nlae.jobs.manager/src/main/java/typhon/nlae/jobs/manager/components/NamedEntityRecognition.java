@@ -41,7 +41,7 @@ public class NamedEntityRecognition {
 			//ATB Custom Weather NER Annotator
 			if(workflowName.equalsIgnoreCase("atb_weather_ner")) {
 				//ATB Weather NER pipelines
-		        String modelName = "/opt/flink/usrlib/ATB-ner-model-de.ser.gz";
+		        String modelName = "/opt/flink/plugins/ATB-ner-model-de.ser.gz";
 				if(atbPipeline == null) {
 		        	Properties propsatb = new Properties();
 			        propsatb.setProperty("annotators", "tokenize,ssplit,pos,lemma,ner");
