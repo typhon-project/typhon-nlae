@@ -13,6 +13,7 @@
     a. Elasticsearch: at least 16GB RAM and large storage capacity
 
     b. RabbitMQ: 4-8GB RAM and fast SSD storage
+5. Configure a shared file system (e.g. NFS) for the cluster and share/mount */home/computing/opt/flink/models* on it. This directory will be shared by all nodes to include the custom trained classifier models.
 
 ## Configurable Entities:
 
