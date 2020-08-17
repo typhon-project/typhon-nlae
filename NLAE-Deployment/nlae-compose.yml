@@ -34,7 +34,7 @@ services:
     image: ehudev/flink-typhon-nlae:latest
     volumes:
       - ./conf:/opt/flink/conf 
-      - ./models:/opt/flink/plugins
+      - /home/computing/opt/flink/models:/opt/flink/plugins
     depends_on:
       - elasticsearch
       - rabbitmq
