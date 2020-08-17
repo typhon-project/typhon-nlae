@@ -31,10 +31,10 @@ services:
       - "8080"
 
   jobmanager:
-    image: flink-typhon-nlae:latest
+    image: ehudev/flink-typhon-nlae:latest
     volumes:
       - ./conf:/opt/flink/conf 
-      - ./models:/opt/flink/plugins
+      - /path/to/models:/opt/flink/plugins
     depends_on:
       - elasticsearch
       - rabbitmq
@@ -53,7 +53,7 @@ services:
   taskmanager:
     image: flink:1.9.0-scala_2.11
     volumes:
-      - /home/computing/opt/flink/models:/opt/flink/plugins
+      - /path/to/models:/opt/flink/plugins
     depends_on:
       - jobmanager
     command: taskmanager
