@@ -31,7 +31,7 @@ services:
       - "8080"
 
   jobmanager:
-    image: flink-typhon-nlae:latest
+    image: ehudev/flink-typhon-nlae:latest
     volumes:
       - ./conf:/opt/flink/conf 
       - ./models:/opt/flink/plugins
