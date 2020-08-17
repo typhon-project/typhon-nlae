@@ -156,10 +156,6 @@ Below is the current list of `NlpTaskTypes` supported in Typhon.
 
 - SentimentAnalysis
 
-- TextClassification
-
-- TopicModelling
-
 - TermExtraction
 
 - NamedEntityRecognition
