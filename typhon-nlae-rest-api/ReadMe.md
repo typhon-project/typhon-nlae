@@ -24,14 +24,10 @@ The models associated with the **Endpoints** are presented below.
         "fieldName": "comment",
         "text": "text to be processed",
         "nlpFeatures": [
-            "sentimentanalysis",
-            "namedentityrecognition",
-            ....
+            "sentimentanalysis"
         ],
         "workflowNames": [
-            "workflow1",
-            "workflow2",
-            ....
+            "workflow1"
         ]
     }
 ```
