@@ -1,0 +1,41 @@
+version: '3'
+
+services:
+  elasticsearch:
+    container_name: elasticsearch
+    restart: always
+    environment:
+      - cluster.name=docker-cluster
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    image: "docker.elastic.co/elasticsearch/elasticsearch:6.8.1"
+    networks:
+      nlae:
+        aliases:
+          - elasticsearch
+    ports:
+      - "9200:9200"
+    limits:
+      memlock:
+        hard: -1
+        soft: -1
+    volumes:
+      - "esdata1:/usr/share/elasticsearch/data"
+ 
+  rest-api:
+    container_name: rest-api
+    image: "danny2097/nlae-simulation:latest" 
+    depends_on:
+      - elasticsearch
+      - rabbitmq
+    networks:
+      - nlae
+    ports:
+      - "8080:8080"
+
+volumes:
+  esdata1:
+ 
+
+networks:
+  nlae:
