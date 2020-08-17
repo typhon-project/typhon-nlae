@@ -13,6 +13,7 @@
     a. Elasticsearch: at least 16GB RAM and large storage capacity
 
     b. RabbitMQ: 4-8GB RAM and fast SSD storage
+
 5. Create a *models* folder on the Master node and configure a shared file system (e.g. NFS) for the cluster. Share/mount */path/to/models* so that this folder is visible to all nodes in the cluster. This folder will include the custom trained classifier models.
 
 ## Configurable Entities:
@@ -30,7 +31,7 @@ The following values in the nlae-compose.yml can be edited to configure the job 
     c. taskmanager.numberOfTaskSlots <-- update according to number of Task Managers (replicas) deployed
 
     d. parallelism.default <-- update according to number of CORES available
-    
+
     e. Update */path/to/models/* under volumes
 
 3. Flink Task Manager properties in nlae-compose.yml: (can override properties set in flink-conf.yaml).
@@ -42,5 +43,6 @@ The following values in the nlae-compose.yml can be edited to configure the job 
       2. parallelism.default
 
     b. Flink Task Manager replicas
-    
+
     c. Update */path/to/models/* under volumes
+
