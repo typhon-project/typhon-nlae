@@ -30,6 +30,8 @@ The following values in the nlae-compose.yml can be edited to configure the job 
     c. taskmanager.numberOfTaskSlots <-- update according to number of Task Managers (replicas) deployed
 
     d. parallelism.default <-- update according to number of CORES available
+    
+    e. Update */path/to/models/* under volumes
 
 3. Flink Task Manager properties in nlae-compose.yml: (can override properties set in flink-conf.yaml).
 
@@ -40,3 +42,5 @@ The following values in the nlae-compose.yml can be edited to configure the job 
       2. parallelism.default
 
     b. Flink Task Manager replicas
+    
+    c. Update */path/to/models/* under volumes
