@@ -36,7 +36,7 @@ import com.google.gson.JsonParser;
 
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
-import typhon.nlae.rest.api.conf.ConfigureRabbitMq;
+import typhon.nlae.rest.api.ConfigureRabbitMq;
 import typhon.nlae.rest.api.models.Delete;
 import typhon.nlae.rest.api.models.Process;
 import typhon.nlae.rest.api.models.ProcessedEntity;
