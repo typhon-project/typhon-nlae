@@ -1,4 +1,4 @@
-package typhon.nlae.rest.api.conf;
+package typhon.nlae.rest.api;
 
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
