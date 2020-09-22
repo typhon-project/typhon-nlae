@@ -1,4 +1,4 @@
-package typhon.nlae.rest.api.conf;
+package typhon.nlae.rest.api;
 
 
 	import springfox.documentation.builders.ApiInfoBuilder;
