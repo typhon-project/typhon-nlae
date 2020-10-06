@@ -5,16 +5,6 @@ package typhon.nlae.jobs.manager.components;
 
 import java.util.Properties;
 
-import org.apache.uima.UIMAFramework;
-import org.apache.uima.analysis_engine.AnalysisEngine;
-import org.apache.uima.fit.factory.AnalysisEngineFactory;
-import org.apache.uima.fit.factory.JCasFactory;
-import org.apache.uima.fit.util.JCasUtil;
-import org.apache.uima.jcas.JCas;
-import org.apache.uima.resource.ResourceInitializationException;
-
-import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Paragraph;
-import de.tudarmstadt.ukp.dkpro.core.tokit.ParagraphSplitter;
 import edu.stanford.nlp.ling.CoreAnnotations;
 import edu.stanford.nlp.neural.rnn.RNNCoreAnnotations;
 import edu.stanford.nlp.pipeline.Annotation;
@@ -48,25 +38,23 @@ public class SentimentAnalysis {
 	}
 	
 	public String getSentiment(String input, String workflowName) {
-		int mainSentiment = 0;
-        int longest = 0;
+		int sentenceSentiment = 0;
+        int count = 0;
+        double overallSentiment = 0;
         String result = "";
-        boolean hasResult = false;
         try {
         	annotation = pipeline.process(input);
-        	CoreMap mainSentence = null;
+        	Tree tree = null;
             for (CoreMap sentence : annotation.get(CoreAnnotations.SentencesAnnotation.class)) {
             	
-            	String partText = sentence.toString();
-	            if (partText.length() > longest) {
-	                mainSentence = sentence;
-	                hasResult = true;
-	                //longest = partText.length();
-	            }
+            	tree =  sentence.get(SentimentCoreAnnotations.SentimentAnnotatedTree.class);
+            	sentenceSentiment = sentenceSentiment + RNNCoreAnnotations.getPredictedClass(tree);
+            	count++;
             }
-            Tree tree = mainSentence.get(SentimentCoreAnnotations.SentimentAnnotatedTree.class);
-            int sentiment = RNNCoreAnnotations.getPredictedClass(tree);
-			result = result+"[{\"Sentiment\": \"" + sentiment  + "\"}]";
+            if(count>0)
+            	overallSentiment = Math.ceil((double)sentenceSentiment/count);
+            
+			result = result+"[{\"Sentiment\": \"" + (int)overallSentiment  + "\"}]";
 			
 			
         }catch(Exception e) {
