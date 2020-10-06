@@ -51,70 +51,139 @@ The models associated with the **Endpoints** are presented below.
                 "wflow": "wflow2" 
             }], 
             "select": ["r.@id", "r.text.SentimentAnalysis.Sentiment", "r.text.NamedEntityRecognition.NamedEntity"], 
-            "where": [{ 
-                "op": ">", 
-                "lhs": { 
-                    "attr": "r.text.SentimentAnalysis.Sentiment" 
-                }, 
-            "rhs": { 
-                    "lit": "1", 
-                    "type": "int" 
-                } 
-            }, { 
-                "op": "in", 
-                "rhs": { 
-                    "lit": "('TITLE','MISC')", 
-                    "type": "String" 
-                }, 
-                "lhs": { 
-                    "attr": "r.text.NamedEntityRecognition.NamedEntity" 
-                } 
-            }] 
+            "where": [{}] //WHERE Clause* 
         }
     }
 ```
-* For more than 2 queries add a "query-op" property between the query conditions:
+* The "where" property allows to define different types of sql where clauses as follows:
+1. Single WHERE condition: (Example: WHERE r.text.SentimentAnalysis.Sentiment > 1 )
 
 ```json
-....
-"where": [{
-                    "op": ">",
-                    "lhs": {
-                        "attr": "r.text.SentimentAnalysis.Sentiment"
-                    },
-                    "rhs": {
-                        "lit": "1",
-                        "type": "int"
-                    }
-                }, {
-                    "query-op": "AND"
-                },
-                {
-                    "op": "in",
-                    "rhs": {
-                        "lit": "('TITLE','ORGANIZATION')",
-                        "type": "String"
-                    },
-                    "lhs": {
-                        "attr": "r.text.NamedEntityRecognition.NamedEntity"
-                    }
-                }, {
-                    "query-op": "OR"
-                },
-                {
-                    "op": "in",
-                    "rhs": {
-                        "lit": "('Doctor','Tesla')",
-                        "type": "String"
-                    },
-                    "lhs": {
-                        "attr": "r.text.NamedEntityRecognition.WordToken"
-                    }
-                }
-            ]
-.....
+    "where": [
+      {
+        "query": [
+          {
+            "op": ">",
+            "lhs": {
+              "attr": "r.text.SentimentAnalysis.Sentiment"
+            },
+            "rhs": {
+              "lit": 1,
+              "type": "int"
+            }
+          }
+        ]}
+  ]
 ```
+2. Multiple WHERE conditions: (Example: WHERE r.text.SentimentAnalysis.Sentiment > 1 AND r.text.SentimentAnalysis.Sentiment < 4 )
 
+```json
+"where": [{     
+        "query": [{
+            "op": ">",
+            "lhs": {
+                "attr": "r.text.SentimentAnalysis.Sentiment"
+            },
+            "rhs": {
+                "lit": 1,
+                "type": "int"
+            }
+        }]
+    }, {
+        "multiCondition": { 
+            "multiConditionOp": "AND"
+        }
+    }, {
+        "query": [{     
+            "op": "<",
+            "lhs": {
+                "attr": "r.text.SentimentAnalysis.Sentiment"
+            },
+            "rhs": {
+                "lit": 4,
+                "type": "int"
+            }
+        }]
+    }]
+```
+3. Compound WHERE conditions: (Example: (WHERE r.text.SentimentAnalysis.Sentiment > 1 OR r.text.SentimentAnalysis.Sentiment < 3) )
+
+```json
+"where": [
+      {
+        "query": [
+          {
+            "op": ">",
+            "lhs": {
+              "attr": "r.text.SentimentAnalysis.Sentiment"
+            },
+            "rhs": {
+              "lit": 1,
+              "type": "int"
+            },
+            "compoundConditionOp": "OR"
+          },
+          {
+            "op": "<",
+            "lhs": {
+              "attr": "r.text.SentimentAnalysis.Sentiment"
+            },
+            "rhs": {
+              "lit": 3,
+              "type": "int"
+            }
+          }
+        ]}
+    ]
+```
+4. Multiple WHERE conditions including Compound conditions: (Example: (WHERE r.text.SentimentAnalysis.Sentiment > 1 AND r.text.SentimentAnalysis.Sentiment < 3) OR r.text.NamedEntityRecognition.NamedEntity in ('TITLE','PERSON') )
+
+```json
+"where": [
+      {
+        "query": [
+          {
+            "op": ">",
+            "lhs": {
+              "attr": "r.text.SentimentAnalysis.Sentiment"
+            },
+            "rhs": {
+              "lit": 1,
+              "type": "int"
+            },
+            "compoundConditionOp": "AND"
+          },
+          {
+            "op": "<",
+            "lhs": {
+              "attr": "r.text.SentimentAnalysis.Sentiment"
+            },
+            "rhs": {
+              "lit": 3,
+              "type": "int"
+            }
+          }
+
+        ]}, {
+        "multiCondition": { 
+            "multiConditionOp": "OR"
+            }
+        },
+        {
+        "query": [
+          {
+            "op": "in",
+            "lhs": {
+              "attr": "r.text.NamedEntityRecognition.NamedEntity"
+            },
+            "rhs": {
+              "lit": "('TITLE', 'PERSON')",
+              "type": "string"
+            }
+          }
+        ]}
+    ]
+```
 ### Delete
 
 ```json
