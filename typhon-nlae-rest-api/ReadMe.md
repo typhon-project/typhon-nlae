@@ -56,7 +56,7 @@ The models associated with the **Endpoints** are presented below.
     }
 ```
 * The "where" property allows to define different types of sql where clauses as follows:
-1. Single WHERE condition: (Example: WHERE r.text.SentimentAnalysis.Sentiment > 1 )
+1. Single WHERE condition: [SQL Example: WHERE r.text.SentimentAnalysis.Sentiment > 1]
 
 ```json
     "where": [
@@ -75,7 +75,7 @@ The models associated with the **Endpoints** are presented below.
         ]}
   ]
 ```
-2. Multiple WHERE conditions: (Example: WHERE r.text.SentimentAnalysis.Sentiment > 1 AND r.text.SentimentAnalysis.Sentiment < 4 )
+2. Multiple WHERE conditions: [SQL Example: WHERE r.text.SentimentAnalysis.Sentiment > 1 AND r.text.SentimentAnalysis.Sentiment < 4]
 
 ```json
 "where": [{     
@@ -106,7 +106,7 @@ The models associated with the **Endpoints** are presented below.
         }]
     }]
 ```
-3. Compound WHERE conditions: (Example: (WHERE r.text.SentimentAnalysis.Sentiment > 1 OR r.text.SentimentAnalysis.Sentiment < 3) )
+3. Compound WHERE conditions: [SQL Example: (WHERE r.text.SentimentAnalysis.Sentiment > 1 OR r.text.SentimentAnalysis.Sentiment < 3)]
 
 ```json
 "where": [
@@ -136,7 +136,7 @@ The models associated with the **Endpoints** are presented below.
         ]}
     ]
 ```
-4. Multiple WHERE conditions including Compound conditions: (Example: (WHERE r.text.SentimentAnalysis.Sentiment > 1 AND r.text.SentimentAnalysis.Sentiment < 3) OR r.text.NamedEntityRecognition.NamedEntity in ('TITLE','PERSON') )
+4. Multiple WHERE conditions including Compound conditions: [SQL Example: (WHERE r.text.SentimentAnalysis.Sentiment > 1 AND r.text.SentimentAnalysis.Sentiment < 3) OR r.text.NamedEntityRecognition.NamedEntity in ('TITLE','PERSON')]
 
 ```json
 "where": [
@@ -229,7 +229,9 @@ Below is the current list of `NlpTaskTypes` supported in Typhon.
 
 - CoreferenceResolution
 
-  
+## Use Case specific Workflow Names
+- ATB Weather NER -> "atb_weather_ner"
+- AlphaBank NER   -> "alpha_bank_ner"
 
 ## Documentation
 
