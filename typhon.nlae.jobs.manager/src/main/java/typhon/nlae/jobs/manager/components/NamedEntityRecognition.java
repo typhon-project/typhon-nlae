@@ -5,6 +5,8 @@ import edu.stanford.nlp.pipeline.CoreDocument;
 import edu.stanford.nlp.pipeline.CoreEntityMention;
 import edu.stanford.nlp.pipeline.StanfordCoreNLP;
 
+import typhon.nlae.jobs.manager.utils.AlphaBankNER;
+
 /**
  * This NamedEntityRecognition class provides Named-Entity Recognition Nlp functionality  
  * @author Raja Muhammad Suleman
@@ -34,7 +36,8 @@ public class NamedEntityRecognition {
 	
 	public String getNer(String input, String workflowName) {
 		String result = "";
-		boolean hasResult = false;
+		result = "[";
+		
 		try {
 			document = new CoreDocument(input);
 	        
@@ -50,21 +53,28 @@ public class NamedEntityRecognition {
 			    }
 		        atbPipeline.annotate(document);
 		    }
+			else if(workflowName.equalsIgnoreCase("alpha_bank_ner")) { //Alhpa Bank Custom Annotator
+				AlphaBankNER alphaNER = new AlphaBankNER(input);
+				result = alphaNER.getResult();
+				
+			}
 			else {//Default NER Tagger
 				pipeline.annotate(document);
-		   }
+			}
 			
-			result = "[";
+			//Results for Default and ATB Classifiers
+			if(!workflowName.equalsIgnoreCase("alpha_bank_ner")) {
+				for (CoreEntityMention em : document.entityMentions()) {
+		            result = result +"{\"begin\" : " + em.charOffsets().first + ",\"end\" : " + em.charOffsets().second + ",\"NamedEntity\" : \"" + em.entityType() + "\",\"WordToken\" : \""+ em.text() + "\" },";
+		        }
+			}
+			
 	        
-	        for (CoreEntityMention em : document.entityMentions()) {
-	            result = result +"{\"begin\" : " + em.charOffsets().first + ",\"end\" : " + em.charOffsets().second + ",\"NamedEntity\" : \"" + em.entityType() + "\",\"WordToken\" : \""+ em.text() + "\" },";
-	            hasResult = true;
-	        }
-			
-	        if(hasResult)
+			if(result.length()>10)
 	        	result = result.substring(0,result.length()-1) + "]";
 	        else
 	        	result = result+"]";
+			
 		}catch(Exception e) {
 			System.out.println("Excpetion occurred while performing Named Entity Recognition Task : "+e.getMessage());
 		}
