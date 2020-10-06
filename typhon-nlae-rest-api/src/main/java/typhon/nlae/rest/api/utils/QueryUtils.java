@@ -10,111 +10,83 @@ import org.elasticsearch.client.Response;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.json.JSONObject;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import typhon.nlae.rest.api.models.NlpExpression;
+import typhon.nlae.rest.api.models.NlpExpressionLhs;
+import typhon.nlae.rest.api.models.NlpExpressionQuery;
+import typhon.nlae.rest.api.models.NlpExpressionRhs;
+import typhon.nlae.rest.api.models.NlpExpressionWhere;
 
 public class QueryUtils {
 
-	public static List<String> parseNlpExpression(String nlpExpression) {
+public static List<String> parseNlpExpression(String jsonString) throws JsonMappingException, JsonProcessingException {
 		
+		ObjectMapper mapper = new ObjectMapper();
+		NlpExpression nlpExpression= mapper.readValue(jsonString, NlpExpression.class);
+	    
 		String queryString = "";
-		List<String> resultString = new ArrayList<String>(); 
-		JsonObject jsonObject = JsonParser.parseString(nlpExpression).getAsJsonObject();
+		String entityType = "";
+		String alias = "";
+		List<String> selectList;
+		List<String> resultString = new ArrayList<String>();
 		
-		String entityType = jsonObject.getAsJsonObject("from").get("entity").getAsString();
-		resultString.add(entityType.toLowerCase());
-		String alias = jsonObject.getAsJsonObject("from").get("named").getAsString();
-        
-        JsonArray cols = jsonObject.getAsJsonArray("select");
-        queryString = queryString+"SELECT ";
-        String[] exploded;
-        
-        if(cols.size() == 1 && cols.get(0).getAsString() == "*") {
+		entityType = nlpExpression.getFrom().getEntity().toLowerCase();
+		resultString.add(entityType);
+		alias = nlpExpression.getFrom().getNamed();
+		
+		queryString = queryString+"SELECT ";
+		selectList = nlpExpression.getSelect();
+		if(selectList.size() == 1 && selectList.get(0) == "*") {
         	queryString = queryString + "*";
         }
         else {
-        	for (int i = 0; i < cols.size(); i++){
-        		String field = "";
-            	String tmp = cols.get(i).getAsString();
-            	exploded = tmp.split("[.]");
-            	if(exploded.length == 1) {
-            		queryString = queryString + alias + "." + tmp.replace("@", "") + ", ";
-            		resultString.add(tmp.replace("@", ""));
-            	}
-            	else if(exploded.length<=2) {
-            		queryString = queryString + alias + "." + exploded[1].replace("@", "") + ", ";
-            		resultString.add(tmp);
-            	}else {
-            		for(int j = 2; j<exploded.length; j++)
-            			field = field + "." + exploded[j];
-            		queryString = queryString + alias + field + ", ";
-            		resultString.add(tmp);
-               }
+        	for (int i = 0; i < selectList.size(); i++){
+            	String selectItem = selectList.get(i);
+            	queryString = queryString + selectItem.replace("@", "").replace(".text.", ".")  + ", ";
+            	resultString.add(selectItem.replace("@", ""));
             }
         	queryString = queryString.substring(0,queryString.length()-2);
         }
-        
-       
-        queryString = queryString + " ";
-        
+	    
+		queryString = queryString + " ";
         queryString = queryString +  "FROM " + entityType.toLowerCase() + " AS " + alias + " ";
-        
-        JsonArray whereClause = jsonObject.getAsJsonArray("where");
+		
         queryString = queryString+"WHERE ";
-        ArrayList<String> queries = new ArrayList<String>();
-        ArrayList<String> queryOps = new ArrayList<String>();
-        String[] tmpLhs;
-        String newLhs = "";
-        boolean multiQuery = false;
-        if(whereClause.size()>2)
-        	multiQuery = true;
-        for(int i =0;i< whereClause.size();i++) {
-	    	if(multiQuery) {
-	    		if(i%2 != 0) {
-	    			queryOps.add(whereClause.get(i).getAsJsonObject().get("query-op").getAsString());
-	    			continue;
-	    		}
-	    	}
-	    	
-			newLhs = alias;
-			String op = whereClause.get(i).getAsJsonObject().get("op").getAsString();
-	    	String lhs = whereClause.get(i).getAsJsonObject().get("lhs").getAsJsonObject().get("attr").getAsString();
-	    	tmpLhs = lhs.split("[.]");
-	    	for(int j=2;j<tmpLhs.length;j++) {
-	    		newLhs = newLhs + "." + tmpLhs[j];
-	    	}
-	    	
-	    	String rhs = whereClause.get(i).getAsJsonObject().get("rhs").getAsJsonObject().get("lit").getAsString();
-	    	String tmpQuery = newLhs + " " + op + " " + rhs;
-	    	
-	    	queries.add(tmpQuery);
-	    }
-		
-        String mergedQueries = "";
-        int count =0;
-        if(queryOps.size()>0) {
-        	for(int i = 0;i<queries.size()-1;i++) {
-        		mergedQueries = mergedQueries + queries.get(i) + " " + queryOps.get(count++) + " ";
+        
+        List<NlpExpressionWhere> queryList = null;
+        queryList = nlpExpression.getWhere();
+        for(int i=0;i<queryList.size();i++) {
+        	NlpExpressionWhere tmp = queryList.get(i);
+        	List<NlpExpressionQuery> tmpQuery = tmp.getQuery();
+        	if(null != tmpQuery) {
+        		if(tmpQuery.size()>1)
+        			queryString = queryString + "(";
+        		for(int j=0;j<tmpQuery.size();j++) {
+        			String queryOp = tmpQuery.get(j).getOp();
+        			NlpExpressionLhs queryLhs = tmpQuery.get(j).getLhs();
+        			NlpExpressionRhs queryRhs = tmpQuery.get(j).getRhs();
+        			
+        			
+        			if(null != tmpQuery.get(j).getcompoundConditionOp())
+        				queryString = queryString + queryLhs.getAttr().replace(".text.", ".") + " " + queryOp + " " + queryRhs.getLit() + " " + tmpQuery.get(j).getcompoundConditionOp() + " ";
+        			else
+        				queryString = queryString + queryLhs.getAttr().replace(".text.", ".") + " " + queryOp + " " + queryRhs.getLit();
+        			
+        		}
+        		if(tmpQuery.size()>1)
+        			queryString = queryString + ")";
+        	}else {
+        		if(null != tmp.getMultiCondition()) {
+        			queryString = queryString + " " + tmp.getMultiCondition().getMultiConditionOp() + " ";
+        		}
         	}
-        	mergedQueries = mergedQueries + queries.get(queries.size()-1);
-        	queryString = queryString + mergedQueries;
+        		
         }
-        else {
-        	if(queries.size()>1){
-            	for(int i = 0;i<queries.size()-1;i++) {
-            		mergedQueries = mergedQueries + queries.get(i) + " AND ";
-            	}
-            	mergedQueries = mergedQueries + queries.get(queries.size()-1);
-            	queryString = queryString + mergedQueries;
-            }
-            else
-            	queryString = queryString + queries.get(0);
-        }
-		
         queryString = "{\"query\": \""+ queryString + "\"}";
         resultString.add(queryString);
-
+    
         return resultString;
 	}
 	
