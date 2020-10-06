@@ -2,8 +2,6 @@ package typhon.nlae.rest.api.models;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -26,7 +24,7 @@ public class ProcessedEntity implements Serializable {
 		this.nlpFeatures = process.getNlpFeatures();
 		this.text = process.getText();
 		this.workflowNames = process.getWorkflowNames();
-		//this.result = this.getRandomResult();
+		
 	}
 
 	public ProcessedEntity() {}
