@@ -1,6 +1,7 @@
 package typhon.nlae.jobs.manager.components;
 
 import java.util.Properties;
+
 import edu.stanford.nlp.pipeline.CoreDocument;
 import edu.stanford.nlp.pipeline.CoreEntityMention;
 import edu.stanford.nlp.pipeline.StanfordCoreNLP;
@@ -28,6 +29,7 @@ public class NamedEntityRecognition {
 	        pipeline = new StanfordCoreNLP(props);	
 	        
 	        atbPipeline = null;
+	        
 	   } catch (Exception e) {
 			System.out.println("Error in initialization");
 			e.printStackTrace();
@@ -55,8 +57,7 @@ public class NamedEntityRecognition {
 		    }
 			else if(workflowName.equalsIgnoreCase("alpha_bank_ner")) { //Alhpa Bank Custom Annotator
 				AlphaBankNER alphaNER = new AlphaBankNER(input);
-				result = alphaNER.getResult();
-				
+				result = result + alphaNER.getResult();
 			}
 			else {//Default NER Tagger
 				pipeline.annotate(document);
