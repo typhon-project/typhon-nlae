@@ -30,18 +30,16 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
-import typhon.nlae.rest.api.conf.ConfigureRabbitMq;
+import typhon.nlae.rest.api.ConfigureRabbitMq;
 import typhon.nlae.rest.api.models.Delete;
 import typhon.nlae.rest.api.models.Process;
 import typhon.nlae.rest.api.models.ProcessedEntity;
 import typhon.nlae.rest.api.utils.QueryUtils;
 import io.swagger.annotations.ApiOperation;
+import typhon.nlae.rest.api.models.QueryResponse;
+import typhon.nlae.rest.api.models.Query;
 
 @RestController
 public class Endpoint {
@@ -158,14 +156,10 @@ public class Endpoint {
 	@PostMapping("/queryTextAnalytics")
 	@ApiOperation("Retrieve entities from Text Analytics Backend")
 	@Async
-	public String query(@RequestBody String query) {
-	
-		@SuppressWarnings("deprecation")
-		JsonElement queryEntity =  new JsonParser().parse(query);
-		JsonObject nlpEntity = queryEntity.getAsJsonObject();
-		String nlpExpression = nlpEntity.get("nlpExpression").toString();
+	public QueryResponse query(@RequestBody Query query) throws IOException  {
 		
-		JSONObject result = new JSONObject("{\"header\":[], \"records\":[]}");
+		String nlpExpression = query.getNlpExpression().toJson();
+				
 		List<String> resultString = new ArrayList<String>();
 		String dslQuery = "";
 		JSONObject jsonResult = null;
@@ -182,14 +176,19 @@ public class Endpoint {
 		Request request = new Request("POST", "/"+ resultString.get(0) +"/_search");
 		request.setJsonEntity(dslQuery);
 		Response response;
+		QueryResponse queryResponse = new QueryResponse();
 		try {
 			response = RESTclient.getLowLevelClient().performRequest(request);
 			jsonResult = new JSONObject(EntityUtils.toString(response.getEntity()));
 			
+			List<String> headerList = new ArrayList<String>();
+			
 			for(int i =1; i<resultString.size()-1;i++)
 			{
-				result.append("header", resultString.get(i));
+				headerList.add(resultString.get(i).toString());
 			}
+			
+			queryResponse.setHeader(headerList);
 			
 			List<String> records = new ArrayList<String>();
 			hits = jsonResult.getJSONObject("hits");
@@ -202,7 +201,7 @@ public class Endpoint {
 			
 			if(records.size()>0) {
 				for(int i = 0; i <records.size(); i++) {
-					result.append("records", records.get(i));
+					queryResponse.addRecordsItem(records.get(i));
 				}
 			}
 						
@@ -210,7 +209,7 @@ public class Endpoint {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return result.toString();
+		return queryResponse;
 		
 	}
 
