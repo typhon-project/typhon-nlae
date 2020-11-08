@@ -46,7 +46,7 @@ services:
       - JOB_MANAGER_RPC_ADDRESS=jobmanager
       # jobmanager.heap.size = RAM available on Manager nodes (minimum 4GB, recommended 10GB)
       # taskmanager.numberOfTaskSlots = The number of task slots that each TaskManager offers. Each slot runs one parallel pipeline.
-      - "FLINK_PROPERTIES=jobmanager.heap.size: 10024m \n taskmanager.numberOfTaskSlots: 8
+      - "FLINK_PROPERTIES=jobmanager.heap.size: 10024m \n taskmanager.numberOfTaskSlots: 8"
     deploy:
       mode: replicated
       replicas: 1
