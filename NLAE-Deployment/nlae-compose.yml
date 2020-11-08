@@ -44,6 +44,9 @@ services:
     command: jobmanager
     environment:
       - JOB_MANAGER_RPC_ADDRESS=jobmanager
+      # jobmanager.heap.size = RAM available on Manager nodes (minimum 4GB, recommended 10GB)
+      # taskmanager.numberOfTaskSlots = The number of task slots that each TaskManager offers. Each slot runs one parallel pipeline.
+      - "FLINK_PROPERTIES=jobmanager.heap.size: 10024m \n taskmanager.numberOfTaskSlots: 8
     deploy:
       mode: replicated
       replicas: 1
@@ -59,8 +62,9 @@ services:
     command: taskmanager
     environment:
       - JOB_MANAGER_RPC_ADDRESS=jobmanager
-      - "FLINK_PROPERTIES=taskmanager.heap.size: 16024m \n 
-         parallelism.default: 8"
+      # taskmanager.heap.size = RAM available on Worker nodes (minimum 4GB, recommended 10GB)
+      # parallelism.default = The parallelism used for programs that did not specify and other parallelism.
+      - "FLINK_PROPERTIES=taskmanager.heap.size: 16024m \n parallelism.default: 8"
     # service deployment
     deploy:
       mode: replicated
