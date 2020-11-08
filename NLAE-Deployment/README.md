@@ -22,27 +22,27 @@ The following values in the nlae-compose.yml can be edited to configure the job 
 
 1. External Port for REST API. Since REST API is the only service visible outside the NLAE Docker Swarm, therefore the Ports for the rest of the services don’t need to be updated as these will only be visible within the NLAE cluster.
 
-2. Flink Job Manager properties in /conf/flink-conf.yaml file.
+2. Flink Job Manager properties in nlae-compose.yml file. (overrides properties set in /conf/flink-conf.yaml).
 
-    a. The heap size for the JobManager JVM <-- update according to RAM available/Job Manager
+    a. “FLINK_PROPERTIES=prop1,prop2…”
+        
+        1. jobmanager.heap.size <-- update according to RAM available/Job Manager
+        
+        2. taskmanager.numberOfTaskSlots <-- update according to number of Task Managers (replicas) deployed
 
-    b. The heap size for the TaskManager JVM <-- update according to RAM available/Task Manager
+    b. deploy->replicas <-- number of Job Manager replicas to deploy (default 1)
+    
+    c. Update */path/to/models/* under volumes
 
-    c. taskmanager.numberOfTaskSlots <-- update according to number of Task Managers (replicas) deployed
-
-    d. parallelism.default <-- update according to number of CORES available
-
-    e. Update */path/to/models/* under volumes
-
-3. Flink Task Manager properties in nlae-compose.yml: (can override properties set in flink-conf.yaml).
+3. Flink Task Manager properties in nlae-compose.yml: (overrides properties set in /conf/flink-conf.yaml).
 
     a. “FLINK_PROPERTIES=prop1,prop2…”
 
-      1. taskmanager.heap.size
+        1. taskmanager.heap.size
 
-      2. parallelism.default
+        2. parallelism.default
 
-    b. Flink Task Manager replicas
+    b. deploy->replicas <-- number of Task Manager (Worker Nodes) replicas to deploy (default 2) 
 
     c. Update */path/to/models/* under volumes
 
