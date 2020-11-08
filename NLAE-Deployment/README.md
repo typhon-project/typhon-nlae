@@ -16,7 +16,7 @@
 
 ## Configurable Entities:
 
-The following values in the nlae-compose.yml can be edited to configure the job manager:
+The following values in the nlae-compose.yml can be edited to configure the NLAE:
 
 1. External Port for REST API. Since REST API is the only service visible outside the NLAE Docker Swarm, therefore the Ports for the rest of the services don’t need to be updated as these will only be visible within the NLAE cluster.
 
