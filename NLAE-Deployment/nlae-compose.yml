@@ -74,7 +74,8 @@ services:
         condition: on-failure
         delay: 5s
         window: 60s
-      # placement constraint - in this case on 'worker' nodes only
+      # placement constraint - in this case on 'worker' nodes only. 
+      # Comment out this section if being tested on a single machine with no Worker nodes in the Docker Swarm.
       placement:
         constraints: [node.role == worker]
 
