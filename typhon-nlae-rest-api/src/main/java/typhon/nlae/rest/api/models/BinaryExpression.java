@@ -22,52 +22,80 @@
 
 package typhon.nlae.rest.api.models;
 
+
 import java.util.Objects;
 import com.google.gson.annotations.SerializedName;
 import io.swagger.annotations.ApiModelProperty;
+import java.io.Serializable;
 
 
-public class Delete {
-  @SerializedName("id")
-  private String id = null;
+public class BinaryExpression implements Serializable {
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
-  @SerializedName("entityType")
-  private String entityType = null;
+@SerializedName("op")
+  private String op = null;
 
-  public Delete id(String id) {
-    this.id = id;
+  @SerializedName("lhs")
+  private NlpExpression lhs = null;
+
+  @SerializedName("rhs")
+  private NlpExpression rhs = null;
+
+  public BinaryExpression op(String op) {
+    this.op = op;
     return this;
   }
 
    /**
-   * Entity Id
-   * @return id
+   * Get op
+   * @return op
   **/
-  @ApiModelProperty(example = "12345", required = true, value = "Entity Id", position = 1)
-  public String getId() {
-    return id;
+  @ApiModelProperty(example = ">", required = true, value = "")
+  public String getOp() {
+    return op;
   }
 
-  public void setId(String id) {
-    this.id = id;
+  public void setOp(String op) {
+    this.op = op;
   }
 
-  public Delete entityType(String entityType) {
-    this.entityType = entityType;
+  public BinaryExpression lhs(NlpExpression lhs) {
+    this.lhs = lhs;
     return this;
   }
 
    /**
-   * type of entity
-   * @return entityType
+   * Get lhs
+   * @return lhs
   **/
-  @ApiModelProperty(example = "review", required = true, value = "type of entity", position = 2)
-  public String getEntityType() {
-    return entityType;
+  @ApiModelProperty(required = true, value = "")
+  public NlpExpression getLhs() {
+    return lhs;
   }
 
-  public void setEntityType(String entityType) {
-    this.entityType = entityType;
+  public void setLhs(NlpExpression lhs) {
+    this.lhs = lhs;
+  }
+
+  public BinaryExpression rhs(NlpExpression rhs) {
+    this.rhs = rhs;
+    return this;
+  }
+
+   /**
+   * Get rhs
+   * @return rhs
+  **/
+  @ApiModelProperty(required = true, value = "")
+  public NlpExpression getRhs() {
+    return rhs;
+  }
+
+  public void setRhs(NlpExpression rhs) {
+    this.rhs = rhs;
   }
 
 
@@ -79,24 +107,26 @@ public class Delete {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    Delete delete = (Delete) o;
-    return Objects.equals(this.id, delete.id) &&
-        Objects.equals(this.entityType, delete.entityType);
+    BinaryExpression binaryExpression = (BinaryExpression) o;
+    return Objects.equals(this.op, binaryExpression.op) &&
+        Objects.equals(this.lhs, binaryExpression.lhs) &&
+        Objects.equals(this.rhs, binaryExpression.rhs);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, entityType);
+    return Objects.hash(op, lhs, rhs);
   }
 
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class Delete {\n");
+    sb.append("{\n");
     
-    sb.append("    id: ").append(toIndentedString(id)).append("\n");
-    sb.append("    entityType: ").append(toIndentedString(entityType)).append("\n");
+    sb.append("    \"op\": \"").append(toIndentedString(op)).append("\",\n");
+    sb.append("    \"lhs\": ").append(toIndentedString(lhs)).append(",\n");
+    sb.append("    \"rhs\": ").append(toIndentedString(rhs)).append("\n");
     sb.append("}");
     return sb.toString();
   }
@@ -113,3 +143,4 @@ public class Delete {
   }
 
 }
+

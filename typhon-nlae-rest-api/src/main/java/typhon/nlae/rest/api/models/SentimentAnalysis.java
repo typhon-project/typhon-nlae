@@ -20,19 +20,51 @@
  * SOFTWARE.
  ******************************************************************************/
 
-package typhon.nlae.rest.api;
+package typhon.nlae.rest.api.models;
 
+import java.io.Serializable;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import org.apache.commons.lang.builder.ToStringBuilder;
 
-public class ApiDescription {
-	
-	public static final String title = "NLAE Rest API";
-	public static final String description = "NLAE Rest API for Typhon";
-	public static final String version  = "1.0.0";
-	public static final String contactName= "Edge Hill Univerity";
-	public static final String contactUrl = "";
-	public static final String contactEmail = "";
-	public static final String license = "";
-	public static final String licenseUrl = "";
-	public static final String basePackage = ApiDescription.class.getPackage().getName();
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonPropertyOrder({
+"Sentiment",
+"SentimentLabel"
+})
+public class SentimentAnalysis implements Serializable
+{
+
+@JsonProperty("Sentiment")
+private String sentiment;
+@JsonProperty("SentimentLabel")
+private String sentimentLabel;
+private final static long serialVersionUID = -2712220480159714124L;
+
+@JsonProperty("Sentiment")
+public String getSentiment() {
+return sentiment;
+}
+
+@JsonProperty("Sentiment")
+public void setSentiment(String sentiment) {
+this.sentiment = sentiment;
+}
+
+@JsonProperty("SentimentLabel")
+public String getSentimentLabel() {
+return sentimentLabel;
+}
+
+@JsonProperty("SentimentLabel")
+public void setSentimentLabel(String sentimentLabel) {
+this.sentimentLabel = sentimentLabel;
+}
+
+@Override
+public String toString() {
+return new ToStringBuilder(this).append("Sentiment", sentiment).append("SentimentLabel", sentimentLabel).toString();
+}
 
 }

@@ -27,47 +27,47 @@ import com.google.gson.annotations.SerializedName;
 import io.swagger.annotations.ApiModelProperty;
 
 
-public class Delete {
-  @SerializedName("id")
-  private String id = null;
+public class QueryWith {
+  @SerializedName("path")
+  private String path = null;
 
-  @SerializedName("entityType")
-  private String entityType = null;
+  @SerializedName("wflow")
+  private String wflow = null;
 
-  public Delete id(String id) {
-    this.id = id;
+  public QueryWith path(String path) {
+    this.path = path;
     return this;
   }
 
    /**
-   * Entity Id
-   * @return id
+   * Get path
+   * @return path
   **/
-  @ApiModelProperty(example = "12345", required = true, value = "Entity Id", position = 1)
-  public String getId() {
-    return id;
+  @ApiModelProperty(example = "r.text.SentimentAnaylsis", value = "")
+  public String getPath() {
+    return path;
   }
 
-  public void setId(String id) {
-    this.id = id;
+  public void setPath(String path) {
+    this.path = path;
   }
 
-  public Delete entityType(String entityType) {
-    this.entityType = entityType;
+  public QueryWith wflow(String wflow) {
+    this.wflow = wflow;
     return this;
   }
 
    /**
-   * type of entity
-   * @return entityType
+   * Get wflow
+   * @return wflow
   **/
-  @ApiModelProperty(example = "review", required = true, value = "type of entity", position = 2)
-  public String getEntityType() {
-    return entityType;
+  @ApiModelProperty(example = "wflow1", value = "")
+  public String getwflow() {
+    return wflow;
   }
 
-  public void setEntityType(String entityType) {
-    this.entityType = entityType;
+  public void setWflow(String wflow) {
+    this.wflow = wflow;
   }
 
 
@@ -79,24 +79,24 @@ public class Delete {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    Delete delete = (Delete) o;
-    return Objects.equals(this.id, delete.id) &&
-        Objects.equals(this.entityType, delete.entityType);
+    QueryWith queryWith = (QueryWith) o;
+    return Objects.equals(this.path, queryWith.path) &&
+        Objects.equals(this.wflow, queryWith.wflow);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, entityType);
+    return Objects.hash(path, wflow);
   }
 
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class Delete {\n");
+    sb.append("{\n");
     
-    sb.append("    id: ").append(toIndentedString(id)).append("\n");
-    sb.append("    entityType: ").append(toIndentedString(entityType)).append("\n");
+    sb.append("    \"path\": \"").append(toIndentedString(path)).append("\",\n");
+    sb.append("    \"wflow\": \"").append(toIndentedString(wflow)).append("\"\n");
     sb.append("}");
     return sb.toString();
   }
@@ -113,3 +113,5 @@ public class Delete {
   }
 
 }
+
+

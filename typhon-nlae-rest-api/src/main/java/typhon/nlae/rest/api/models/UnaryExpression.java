@@ -22,52 +22,59 @@
 
 package typhon.nlae.rest.api.models;
 
+
 import java.util.Objects;
 import com.google.gson.annotations.SerializedName;
 import io.swagger.annotations.ApiModelProperty;
+import java.io.Serializable;
 
 
-public class Delete {
-  @SerializedName("id")
-  private String id = null;
+public class UnaryExpression implements Serializable{
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = -3055191011442968538L;
 
-  @SerializedName("entityType")
-  private String entityType = null;
+@SerializedName("op")
+  private String op = null;
 
-  public Delete id(String id) {
-    this.id = id;
+  @SerializedName("subexpression")
+  private NlpExpression subexpression = null;
+
+  public UnaryExpression op(String op) {
+    this.op = op;
     return this;
   }
 
    /**
-   * Entity Id
-   * @return id
+   * Get op
+   * @return op
   **/
-  @ApiModelProperty(example = "12345", required = true, value = "Entity Id", position = 1)
-  public String getId() {
-    return id;
+  @ApiModelProperty(example = ">", value = "")
+  public String getOp() {
+    return op;
   }
 
-  public void setId(String id) {
-    this.id = id;
+  public void setOp(String op) {
+    this.op = op;
   }
 
-  public Delete entityType(String entityType) {
-    this.entityType = entityType;
+  public UnaryExpression subexpression(NlpExpression subexpression) {
+    this.subexpression = subexpression;
     return this;
   }
 
    /**
-   * type of entity
-   * @return entityType
+   * Get subexpression
+   * @return subexpression
   **/
-  @ApiModelProperty(example = "review", required = true, value = "type of entity", position = 2)
-  public String getEntityType() {
-    return entityType;
+  @ApiModelProperty( value = "")
+  public NlpExpression getSubexpression() {
+    return subexpression;
   }
 
-  public void setEntityType(String entityType) {
-    this.entityType = entityType;
+  public void setSubexpression(NlpExpression subexpression) {
+    this.subexpression = subexpression;
   }
 
 
@@ -79,24 +86,24 @@ public class Delete {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    Delete delete = (Delete) o;
-    return Objects.equals(this.id, delete.id) &&
-        Objects.equals(this.entityType, delete.entityType);
+    UnaryExpression unaryExpression = (UnaryExpression) o;
+    return Objects.equals(this.op, unaryExpression.op) &&
+        Objects.equals(this.subexpression, unaryExpression.subexpression);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, entityType);
+    return Objects.hash(op, subexpression);
   }
 
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class Delete {\n");
+    sb.append("{\n");
     
-    sb.append("    id: ").append(toIndentedString(id)).append("\n");
-    sb.append("    entityType: ").append(toIndentedString(entityType)).append("\n");
+    sb.append("   \"op\": \"").append(toIndentedString(op)).append("\",\n");
+    sb.append("    \"subexpression\": ").append(toIndentedString(subexpression)).append("\n");
     sb.append("}");
     return sb.toString();
   }
@@ -113,3 +120,4 @@ public class Delete {
   }
 
 }
+

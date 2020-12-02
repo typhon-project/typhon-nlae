@@ -1,6 +1,27 @@
+/*******************************************************************************
+ * Copyright (C) 2020 Edge Hill University
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ ******************************************************************************/
+
 package typhon.nlae.jobs.manager.utils;
 
-import java.util.Map;
 import java.util.Properties;
 
 import org.apache.flink.configuration.Configuration;
@@ -26,11 +47,13 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import typhon.nlae.jobs.manager.JobManager;
 
-public class CustomElasticsearchSink extends RichSinkFunction<JsonObject> {
+public class CustomElasticsearchSink extends RichSinkFunction<String> {
 	
 	private static final long serialVersionUID = 9156453251316873855L;
 	
@@ -62,13 +85,17 @@ public class CustomElasticsearchSink extends RichSinkFunction<JsonObject> {
 	}
 
 	@Override
-	public void invoke(JsonObject value) throws Exception {
+	public void invoke(String value) throws Exception {
 		
 		String indexName = "";
 		
+		JsonElement inputEntity =  JsonParser.parseString(value);
+		JsonObject inputObject = inputEntity.getAsJsonObject();
+		
 		// Check if index already exists in Elasticsearch
-		indexName = value.get("entityType").getAsString();
-		String jsonString = value.toString();
+		indexName = inputObject.get("entityType").getAsString().toLowerCase();
+		inputObject.remove("entityType");
+		String jsonString = inputObject.toString();
 		GetIndexRequest getIndexRequest = new GetIndexRequest(indexName);
         boolean exists = esClient.indices().exists(getIndexRequest, RequestOptions.DEFAULT);
         if (!exists) { // index doesn't exist
@@ -97,12 +124,12 @@ public class CustomElasticsearchSink extends RichSinkFunction<JsonObject> {
 			
 		}else {
 			//Index exists
-			String id = value.get("id").toString();
+			String id = inputObject.get("id").getAsString();
 			
 			//Check if Document exists
 			SearchRequest searchRequest = new SearchRequest(indexName);
 			
-			QueryBuilder matchQueryBuilder = QueryBuilders.matchQuery("id", id);
+			QueryBuilder matchQueryBuilder = QueryBuilders.matchPhraseQuery("id", id);
 			SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
 			sourceBuilder.query(matchQueryBuilder);
 			searchRequest.source(sourceBuilder);
@@ -116,10 +143,7 @@ public class CustomElasticsearchSink extends RichSinkFunction<JsonObject> {
 				String esId = hits[0].getId();
 				
 				//Update nlpFeatures array
-				Map<String, Object> sourceAsMap = hits[0].getSourceAsMap();
 				JSONObject updateObject = new JSONObject(jsonString);
-				String nlpFeatures = sourceAsMap.get("nlpFeatures").toString();
-				updateObject.append("nlpFeatures",nlpFeatures.replace("[", "").replace("]", ""));
 				jsonString = updateObject.toString();
 				
 				UpdateRequest updateRequest = new UpdateRequest();

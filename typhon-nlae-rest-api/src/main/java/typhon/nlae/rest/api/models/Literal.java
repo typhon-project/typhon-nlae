@@ -22,52 +22,52 @@
 
 package typhon.nlae.rest.api.models;
 
+
 import java.util.Objects;
 import com.google.gson.annotations.SerializedName;
 import io.swagger.annotations.ApiModelProperty;
 
+public class Literal {
+  @SerializedName("value")
+  private String value = null;
 
-public class Delete {
-  @SerializedName("id")
-  private String id = null;
+  @SerializedName("type")
+  private String type = null;
 
-  @SerializedName("entityType")
-  private String entityType = null;
-
-  public Delete id(String id) {
-    this.id = id;
+  public Literal value(String value) {
+    this.value = value;
     return this;
   }
 
    /**
-   * Entity Id
-   * @return id
+   * Get value
+   * @return value
   **/
-  @ApiModelProperty(example = "12345", required = true, value = "Entity Id", position = 1)
-  public String getId() {
-    return id;
+  @ApiModelProperty(example = "1", required = true, value = "")
+  public String getValue() {
+    return value;
   }
 
-  public void setId(String id) {
-    this.id = id;
+  public void setValue(String value) {
+    this.value = value;
   }
 
-  public Delete entityType(String entityType) {
-    this.entityType = entityType;
+  public Literal type(String type) {
+    this.type = type;
     return this;
   }
 
    /**
-   * type of entity
-   * @return entityType
+   * Get type
+   * @return type
   **/
-  @ApiModelProperty(example = "review", required = true, value = "type of entity", position = 2)
-  public String getEntityType() {
-    return entityType;
+  @ApiModelProperty(example = "int", required = true, value = "")
+  public String getType() {
+    return type;
   }
 
-  public void setEntityType(String entityType) {
-    this.entityType = entityType;
+  public void setType(String type) {
+    this.type = type;
   }
 
 
@@ -79,24 +79,24 @@ public class Delete {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    Delete delete = (Delete) o;
-    return Objects.equals(this.id, delete.id) &&
-        Objects.equals(this.entityType, delete.entityType);
+    Literal literal = (Literal) o;
+    return Objects.equals(this.value, literal.value) &&
+        Objects.equals(this.type, literal.type);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, entityType);
+    return Objects.hash(value, type);
   }
 
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class Delete {\n");
+    sb.append("{\n");
     
-    sb.append("    id: ").append(toIndentedString(id)).append("\n");
-    sb.append("    entityType: ").append(toIndentedString(entityType)).append("\n");
+    sb.append("    \"value\": \"").append(toIndentedString(value)).append("\",\n");
+    sb.append("    \"type\": \"").append(toIndentedString(type)).append("\"\n");
     sb.append("}");
     return sb.toString();
   }
@@ -113,3 +113,4 @@ public class Delete {
   }
 
 }
+

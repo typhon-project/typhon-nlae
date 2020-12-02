@@ -22,52 +22,53 @@
 
 package typhon.nlae.rest.api.models;
 
+
 import java.util.Objects;
 import com.google.gson.annotations.SerializedName;
 import io.swagger.annotations.ApiModelProperty;
 
 
-public class Delete {
-  @SerializedName("id")
-  private String id = null;
+public class QueryFrom {
+  @SerializedName("entity")
+  private String entity = null;
 
-  @SerializedName("entityType")
-  private String entityType = null;
+  @SerializedName("named")
+  private String named = null;
 
-  public Delete id(String id) {
-    this.id = id;
+  public QueryFrom entity(String entity) {
+    this.entity = entity;
     return this;
   }
 
    /**
-   * Entity Id
-   * @return id
+   * Get entity
+   * @return entity
   **/
-  @ApiModelProperty(example = "12345", required = true, value = "Entity Id", position = 1)
-  public String getId() {
-    return id;
+  @ApiModelProperty(example = "Review", required = true, value = "")
+  public String getEntity() {
+    return entity;
   }
 
-  public void setId(String id) {
-    this.id = id;
+  public void setEntity(String entity) {
+    this.entity = entity;
   }
 
-  public Delete entityType(String entityType) {
-    this.entityType = entityType;
+  public QueryFrom named(String named) {
+    this.named = named;
     return this;
   }
 
    /**
-   * type of entity
-   * @return entityType
+   * Get named
+   * @return named
   **/
-  @ApiModelProperty(example = "review", required = true, value = "type of entity", position = 2)
-  public String getEntityType() {
-    return entityType;
+  @ApiModelProperty(example = "r", required = true, value = "")
+  public String getNamed() {
+    return named;
   }
 
-  public void setEntityType(String entityType) {
-    this.entityType = entityType;
+  public void setNamed(String named) {
+    this.named = named;
   }
 
 
@@ -79,24 +80,24 @@ public class Delete {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    Delete delete = (Delete) o;
-    return Objects.equals(this.id, delete.id) &&
-        Objects.equals(this.entityType, delete.entityType);
+    QueryFrom queryFrom = (QueryFrom) o;
+    return Objects.equals(this.entity, queryFrom.entity) &&
+        Objects.equals(this.named, queryFrom.named);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, entityType);
+    return Objects.hash(entity, named);
   }
 
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class Delete {\n");
+    sb.append("{\n");
     
-    sb.append("    id: ").append(toIndentedString(id)).append("\n");
-    sb.append("    entityType: ").append(toIndentedString(entityType)).append("\n");
+    sb.append("    \"entity\": \"").append(toIndentedString(entity)).append("\",\n");
+    sb.append("    \"named\": \"").append(toIndentedString(named)).append("\"\n");
     sb.append("}");
     return sb.toString();
   }
@@ -113,3 +114,5 @@ public class Delete {
   }
 
 }
+
+

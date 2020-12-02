@@ -1,3 +1,25 @@
+/*******************************************************************************
+ * Copyright (C) 2020 Edge Hill University
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ ******************************************************************************/
+
 package typhon.nlae.rest.api.endpoint;
 
 import java.io.IOException;
@@ -152,14 +174,13 @@ public class Endpoint {
 		}
 		
 	}
-
+	
 	@PostMapping("/queryTextAnalytics")
 	@ApiOperation("Retrieve entities from Text Analytics Backend")
 	@Async
 	public QueryResponse query(@RequestBody Query query) throws IOException  {
-		
-		String nlpExpression = query.getNlpExpression().toJson();
-				
+	
+		String nlpExpression = query.toString();
 		List<String> resultString = new ArrayList<String>();
 		String dslQuery = "";
 		JSONObject jsonResult = null;
@@ -169,48 +190,71 @@ public class Endpoint {
 		//parse Nlp Expression
 		resultString = QueryUtils.parseNlpExpression(nlpExpression);
 		
+		String includeFields = "\"includes\":[";
+		for(int k =1;k<resultString.size()-1; k++) {
+			includeFields = includeFields + "\"" + resultString.get(k).substring(resultString.get(k).indexOf(".")+1) + "\",";
+		}
+		includeFields = includeFields.substring(0, includeFields.length()-1) + "]";
+		
 		//generate Elasticsearch DSL query
 		dslQuery = QueryUtils.generateDSLQuery(RESTclient, resultString.get(resultString.size()-1));
+		dslQuery = dslQuery.replaceAll("\"includes\":\\[\"\\w+(.\\w+)*\"(,\"\\w+(.\\w+)*\")*\\]", includeFields);
 		
 		//Run Elasticsearch DSL query
 		Request request = new Request("POST", "/"+ resultString.get(0) +"/_search");
 		request.setJsonEntity(dslQuery);
 		Response response;
-		QueryResponse queryResponse = new QueryResponse();
-		try {
-			response = RESTclient.getLowLevelClient().performRequest(request);
-			jsonResult = new JSONObject(EntityUtils.toString(response.getEntity()));
-			
-			List<String> headerList = new ArrayList<String>();
-			
-			for(int i =1; i<resultString.size()-1;i++)
-			{
-				headerList.add(resultString.get(i).toString());
-			}
-			
-			queryResponse.setHeader(headerList);
-			
-			List<String> records = new ArrayList<String>();
-			hits = jsonResult.getJSONObject("hits");
-			hitsArray = hits.getJSONArray("hits");
 		
-			for (Object hit : hitsArray) {
-				JSONObject obj = (JSONObject) hit;
-				records.add(obj.get("_source").toString());
+		QueryResponse queryResponse = new QueryResponse();
+		
+		response = RESTclient.getLowLevelClient().performRequest(request);
+		jsonResult = new JSONObject(EntityUtils.toString(response.getEntity()));
+		
+		
+		List<String> headerList = new ArrayList<String>();
+		
+		for(int i =1; i<resultString.size()-1;i++)
+		{
+			headerList.add(resultString.get(i).toString());
+		}
+		queryResponse.setHeader(headerList);
+		
+		
+		List<String> records = new ArrayList<String>();
+		hits = jsonResult.getJSONObject("hits");
+		hitsArray = hits.getJSONArray("hits");
+		
+		for (Object hit : hitsArray) {
+			JSONObject obj = (JSONObject) hit;
+			records.add(obj.get("_source").toString());
+		}
+		if(records.size()>0) {
+			List<String> headerValueList = new ArrayList<String>();
+			for(String hTag : headerList) {
+				String headerValue = hTag;
+				headerValue = headerValue.substring(headerValue.indexOf(".")+1);
+				if(headerValue.indexOf('.', headerValue.indexOf('.')) != -1) {
+					headerValue = headerValue.substring(headerValue.indexOf(".")+1);
+					headerValue = headerValue.substring(0,headerValue.indexOf("."));
+				}
+				if(!headerValueList.contains(headerValue))
+					headerValueList.add(headerValue);
 			}
 			
-			if(records.size()>0) {
-				for(int i = 0; i <records.size(); i++) {
-					queryResponse.addRecordsItem(records.get(i));
-				}
+			List<String> headerSequence = new ArrayList<String>();
+			for(String headerTag : headerList ) {
+				headerTag = headerTag.substring(headerTag.indexOf(".")+1);
+				headerTag = headerTag.substring(headerTag.indexOf(".")+1);
+				headerSequence.add(headerTag);
 			}
-						
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			List<String> result = new ArrayList<String>();
+			for(String record : records) {
+					result = QueryUtils.compileResult(record, headerValueList, headerSequence);
+					queryResponse.addRecordsItem(result);
+			}
 		}
 		return queryResponse;
-		
 	}
 
 	@PostMapping("/deleteDocument")

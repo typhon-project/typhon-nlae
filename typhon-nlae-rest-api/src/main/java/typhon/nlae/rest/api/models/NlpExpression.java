@@ -1,112 +1,121 @@
+/*******************************************************************************
+ * Copyright (C) 2020 Edge Hill University
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ ******************************************************************************/
+
 package typhon.nlae.rest.api.models;
 
 import java.util.Objects;
-
 import com.google.gson.annotations.SerializedName;
 import io.swagger.annotations.ApiModelProperty;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ListIterator;
+import java.io.Serializable;
 
 
-public class NlpExpression {
-  @SerializedName("from")
-  private NlpExpressionFrom from = null;
+public class NlpExpression implements Serializable {
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
-  @SerializedName("with")
-  private List<NlpExpressionWith> with = new ArrayList<NlpExpressionWith>();
+@SerializedName("binaryExpression")
+  private BinaryExpression binaryExpression = null;
 
-  @SerializedName("select")
-  private List<String> select = new ArrayList<String>();
+  @SerializedName("unaryExpression")
+  private UnaryExpression unaryExpression = null;
 
-  @SerializedName("where")
-  private List<NlpExpressionWhere> where = new ArrayList<NlpExpressionWhere>();
+  @SerializedName("attribute")
+  private Attribute attribute = null;
 
-  public NlpExpression from(NlpExpressionFrom from) {
-    this.from = from;
+  @SerializedName("literal")
+  private Literal literal = null;
+
+  public NlpExpression binaryExpression(BinaryExpression binaryExpression) {
+    this.binaryExpression = binaryExpression;
     return this;
   }
 
    /**
-   * Get from
-   * @return from
+   * Get binaryExpression
+   * @return binaryExpression
   **/
-  @ApiModelProperty(required = true, value = "", position = 1)
-  public NlpExpressionFrom getFrom() {
-    return from;
+  @ApiModelProperty(value = "")
+  public BinaryExpression getBinaryExpression() {
+    return binaryExpression;
   }
 
-  public void setFrom(NlpExpressionFrom from) {
-    this.from = from;
+  public void setBinaryExpression(BinaryExpression binaryExpression) {
+    this.binaryExpression = binaryExpression;
   }
 
-  public NlpExpression with(List<NlpExpressionWith> with) {
-    this.with = with;
-    return this;
-  }
-
-  public NlpExpression addWithItem(NlpExpressionWith withItem) {
-    this.with.add(withItem);
+  public NlpExpression unaryExpression(UnaryExpression unaryExpression) {
+    this.unaryExpression = unaryExpression;
     return this;
   }
 
    /**
-   * Get with
-   * @return with
+   * Get unaryExpression
+   * @return unaryExpression
   **/
-  @ApiModelProperty(required = true, value = "", position = 2)
-  public List<NlpExpressionWith> getWith() {
-    return with;
+  @ApiModelProperty(value = "")
+  public UnaryExpression getUnaryExpression() {
+    return unaryExpression;
   }
 
-  public void setWith(List<NlpExpressionWith> with) {
-    this.with = with;
+  public void setUnaryExpression(UnaryExpression unaryExpression) {
+    this.unaryExpression = unaryExpression;
   }
 
-  public NlpExpression select(List<String> select) {
-    this.select = select;
-    return this;
-  }
-
-  public NlpExpression addSelectItem(String selectItem) {
-    this.select.add(selectItem);
+  public NlpExpression attribute(Attribute attribute) {
+    this.attribute = attribute;
     return this;
   }
 
    /**
-   * Get select
-   * @return select
+   * Get attribute
+   * @return attribute
   **/
-  @ApiModelProperty(example = "[\"r.@id\",\"r.text.SentimentAnalysis.Sentiment\",\"r.text.NamedEntityRecognition.NamedEntity\"]", required = true, value = "", position = 3)
-  public List<String> getSelect() {
-    return select;
+  @ApiModelProperty(value = "")
+  public Attribute getAttribute() {
+    return attribute;
   }
 
-  public void setSelect(List<String> select) {
-    this.select = select;
+  public void setAttribute(Attribute attribute) {
+    this.attribute = attribute;
   }
 
-  public NlpExpression where(List<NlpExpressionWhere> where) {
-    this.where = where;
-    return this;
-  }
-
-  public NlpExpression addWhereItem(NlpExpressionWhere whereItem) {
-    this.where.add(whereItem);
+  public NlpExpression literal(Literal literal) {
+    this.literal = literal;
     return this;
   }
 
    /**
-   * Get where
-   * @return where
+   * Get literal
+   * @return literal
   **/
-  @ApiModelProperty(required = true, value = "", example = "[{\"query\":[{\"op\":\">\",\"lhs\":{\"attr\":\"r.text.SentimentAnalysis.Sentiment\"},\"rhs\":{\"lit\":1,\"type\":\"int\"}}]},{\"multiCondition\":{\"multiConditionOp\":\"AND\"}},{\"query\":[{\"op\":\"<\",\"lhs\":{\"attr\":\"r.text.SentimentAnalysis.Sentiment\"},\"rhs\":{\"lit\":4,\"type\":\"int\"}}]}]" , position = 4)
-  public List<NlpExpressionWhere> getWhere() {
-    return where;
+  @ApiModelProperty(value = "")
+  public Literal getLiteral() {
+    return literal;
   }
 
-  public void setWhere(List<NlpExpressionWhere> where) {
-    this.where = where;
+  public void setLiteral(Literal literal) {
+    this.literal = literal;
   }
 
 
@@ -119,31 +128,33 @@ public class NlpExpression {
       return false;
     }
     NlpExpression nlpExpression = (NlpExpression) o;
-    return Objects.equals(this.from, nlpExpression.from) &&
-        Objects.equals(this.with, nlpExpression.with) &&
-        Objects.equals(this.select, nlpExpression.select) &&
-        Objects.equals(this.where, nlpExpression.where);
+    return Objects.equals(this.binaryExpression, nlpExpression.binaryExpression) &&
+        Objects.equals(this.unaryExpression, nlpExpression.unaryExpression) &&
+        Objects.equals(this.attribute, nlpExpression.attribute) &&
+        Objects.equals(this.literal, nlpExpression.literal);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(from, with, select, where);
+    return Objects.hash(binaryExpression, unaryExpression, attribute, literal);
   }
 
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("NlpExpression {\n");
-    
-    sb.append("    from: ").append(toIndentedString(from)).append("\n");
-    sb.append("    with: ").append(toIndentedString(with)).append("\n");
-    sb.append("    select: ").append(toIndentedString(select)).append("\n");
-    sb.append("    where: ").append(toIndentedString(where)).append("\n");
+    sb.append("{\n");
+    if(null != binaryExpression)
+    	sb.append("    \"binaryExpression\": ").append(toIndentedString(binaryExpression)).append("\n");
+    if(null != unaryExpression)
+    	sb.append("    \"unaryExpression\": ").append(toIndentedString(unaryExpression)).append("\n");
+    if(null != attribute)
+    	sb.append("    \"attribute\": ").append(toIndentedString(attribute)).append("\n");
+    if(null != literal)
+    	sb.append("    \"literal\": ").append(toIndentedString(literal)).append("\n");
     sb.append("}");
     return sb.toString();
   }
-
   /**
    * Convert the given object to string with each line indented by 4 spaces
    * (except the first line).
@@ -154,34 +165,6 @@ public class NlpExpression {
     }
     return o.toString().replace("\n", "\n    ");
   }
-  
-  public String toJson() {
-	String withStr = "";
-	ListIterator<NlpExpressionWith> withIterator = with.listIterator();
-	 
-	while(withIterator.hasNext()) {
-		 withStr = withStr + withIterator.next() + ",";
-	}
-	withStr = withStr.substring(0, withStr.length()-1);
-	
-	ListIterator<String> selectIterator = select.listIterator();
-	 
-	String selectStr = "";
-	while(selectIterator.hasNext()) {
-		 selectStr = selectStr + "\"" + selectIterator.next() + "\",";
-	}
-	selectStr = selectStr.substring(0, selectStr.length()-1);
-	  
-	StringBuilder sb = new StringBuilder();
-    sb.append("{\n");
-    
-    
-    sb.append("    \"from\": ").append(from).append(",\n");
-    sb.append("   \"with\": [").append(withStr).append("],\n");
-    sb.append("    \"select\": [").append(selectStr).append("],\n");
-    sb.append("    \"where\": ").append(where).append("\n");
-    sb.append("}");
-    return sb.toString();
-  }
 
 }
+

@@ -20,36 +20,64 @@
  * SOFTWARE.
  ******************************************************************************/
 
-package typhon.nlae.rest.api;
+package typhon.nlae.rest.api.models;
 
+import java.io.Serializable;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import org.apache.commons.lang.builder.ToStringBuilder;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonPropertyOrder({
+"begin",
+"end",
+"Paragraph"
+})
+public class ParagraphSegmentation implements Serializable
+{
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
-
-
-
-import springfox.documentation.spring.web.plugins.Docket;
-import springfox.documentation.swagger2.annotations.EnableSwagger2;
-
-@EnableSwagger2
-@SpringBootApplication
-public class Application {
-
-	protected Logger logger = LogManager.getLogger(Application.class);
+	@JsonProperty("begin")
+	private Long begin;
+	@JsonProperty("end")
+	private Long end;
+	@JsonProperty("Paragraph")
+	private String paragraph;
+	private final static long serialVersionUID = 2030057850085669333L;
 	
-	public static void main(String[] args) {
-		SpringApplication.run(Application.class, args);
+	@JsonProperty("begin")
+	public Long getBegin() {
+	return begin;
 	}
 	
-	@Bean
-	public Docket swaggerConfiguration() {
-		
+	@JsonProperty("begin")
+	public void setBegin(Long begin) {
+	this.begin = begin;
+	}
 	
-		return new DocumentationConfiguration().getConfiguration();
+	@JsonProperty("end")
+	public Long getEnd() {
+	return end;
+	}
+	
+	@JsonProperty("end")
+	public void setEnd(Long end) {
+	this.end = end;
+	}
+	
+	@JsonProperty("Paragraph")
+	public String getParagraph() {
+	return paragraph;
+	}
+	
+	@JsonProperty("Paragraph")
+	public void setParagraph(String paragraph) {
+	this.paragraph = paragraph;
+	}
+	
+	@Override
+	public String toString() {
+	return new ToStringBuilder(this).append("begin", begin).append("end", end).append("paragraph", paragraph).toString();
 	}
 
 }

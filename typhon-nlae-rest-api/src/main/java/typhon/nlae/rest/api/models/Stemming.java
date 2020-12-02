@@ -20,19 +20,64 @@
  * SOFTWARE.
  ******************************************************************************/
 
-package typhon.nlae.rest.api;
+package typhon.nlae.rest.api.models;
 
+import java.io.Serializable;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import org.apache.commons.lang.builder.ToStringBuilder;
 
-public class ApiDescription {
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonPropertyOrder({
+"begin",
+"end",
+"Stem"
+})
+public class Stemming implements Serializable
+{
+
+	@JsonProperty("begin")
+	private Long begin;
+	@JsonProperty("end")
+	private Long end;
+	@JsonProperty("Stem")
+	private String stem;
+	private final static long serialVersionUID = -3887502239114690817L;
 	
-	public static final String title = "NLAE Rest API";
-	public static final String description = "NLAE Rest API for Typhon";
-	public static final String version  = "1.0.0";
-	public static final String contactName= "Edge Hill Univerity";
-	public static final String contactUrl = "";
-	public static final String contactEmail = "";
-	public static final String license = "";
-	public static final String licenseUrl = "";
-	public static final String basePackage = ApiDescription.class.getPackage().getName();
+	@JsonProperty("begin")
+	public Long getBegin() {
+	return begin;
+	}
+	
+	@JsonProperty("begin")
+	public void setBegin(Long begin) {
+	this.begin = begin;
+	}
+	
+	@JsonProperty("end")
+	public Long getEnd() {
+	return end;
+	}
+	
+	@JsonProperty("end")
+	public void setEnd(Long end) {
+	this.end = end;
+	}
+	
+	@JsonProperty("Stem")
+	public String getStem() {
+	return stem;
+	}
+	
+	@JsonProperty("Stem")
+	public void setStem(String stem) {
+	this.stem = stem;
+	}
+	
+	@Override
+	public String toString() {
+	return new ToStringBuilder(this).append("begin", begin).append("end", end).append("stem", stem).toString();
+	}
 
 }

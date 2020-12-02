@@ -20,19 +20,64 @@
  * SOFTWARE.
  ******************************************************************************/
 
-package typhon.nlae.rest.api;
+package typhon.nlae.rest.api.models;
 
+import java.io.Serializable;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import org.apache.commons.lang.builder.ToStringBuilder;
 
-public class ApiDescription {
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonPropertyOrder({
+"end",
+"Token",
+"begin"
+})
+public class Tokenisation implements Serializable
+{
+
+	@JsonProperty("end")
+	private Long end;
+	@JsonProperty("Token")
+	private String token;
+	@JsonProperty("begin")
+	private Long begin;
+	private final static long serialVersionUID = 5241041340043642611L;
 	
-	public static final String title = "NLAE Rest API";
-	public static final String description = "NLAE Rest API for Typhon";
-	public static final String version  = "1.0.0";
-	public static final String contactName= "Edge Hill Univerity";
-	public static final String contactUrl = "";
-	public static final String contactEmail = "";
-	public static final String license = "";
-	public static final String licenseUrl = "";
-	public static final String basePackage = ApiDescription.class.getPackage().getName();
+	@JsonProperty("end")
+	public Long getEnd() {
+	return end;
+	}
+	
+	@JsonProperty("end")
+	public void setEnd(Long end) {
+	this.end = end;
+	}
+	
+	@JsonProperty("Token")
+	public String getToken() {
+	return token;
+	}
+	
+	@JsonProperty("Token")
+	public void setToken(String token) {
+	this.token = token;
+	}
+	
+	@JsonProperty("begin")
+	public Long getBegin() {
+	return begin;
+	}
+	
+	@JsonProperty("begin")
+	public void setBegin(Long begin) {
+	this.begin = begin;
+	}
+	
+	@Override
+	public String toString() {
+	return new ToStringBuilder(this).append("end", end).append("token", token).append("begin", begin).toString();
+	}
 
 }

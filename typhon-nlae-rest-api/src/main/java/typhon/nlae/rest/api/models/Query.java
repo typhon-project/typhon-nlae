@@ -1,72 +1,128 @@
+/*******************************************************************************
+ * Copyright (C) 2020 Edge Hill University
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ ******************************************************************************/
+
 package typhon.nlae.rest.api.models;
+
 
 import java.util.Objects;
 import com.google.gson.annotations.SerializedName;
 import io.swagger.annotations.ApiModelProperty;
-
+import java.util.ArrayList;
+import java.util.List;
+import java.util.ListIterator;
 
 public class Query {
-  @SerializedName("entityType")
-  private String entityType = null;
+  @SerializedName("from")
+  private QueryFrom from = null;
 
-  @SerializedName("fieldName")
-  private String fieldName = null;
+  @SerializedName("with")
+  private List<QueryWith> with = new ArrayList<QueryWith>();
 
-  @SerializedName("nlpExpression")
-  private NlpExpression nlpExpression = null;
+  @SerializedName("select")
+  private List<String> select = new ArrayList<String>();
 
-  public Query entityType(String entityType) {
-    this.entityType = entityType;
+  @SerializedName("where")
+  private NlpExpression where = null;
+
+  public Query from(QueryFrom from) {
+    this.from = from;
     return this;
   }
 
    /**
-   * type of entity
-   * @return entityType
+   * Get from
+   * @return from
   **/
-  @ApiModelProperty(example = "review", required = true, value = "type of entity")
-  public String getEntityType() {
-    return entityType;
+  @ApiModelProperty(required = true, value = "", position = 1)
+  public QueryFrom getFrom() {
+    return from;
   }
 
-  public void setEntityType(String entityType) {
-    this.entityType = entityType;
+  public void setFrom(QueryFrom from) {
+    this.from = from;
   }
 
-  public Query fieldName(String fieldName) {
-    this.fieldName = fieldName;
+  public Query with(List<QueryWith> with) {
+    this.with = with;
+    return this;
+  }
+
+  public Query addWithItem(QueryWith withItem) {
+    this.with.add(withItem);
     return this;
   }
 
    /**
-   * name of field
-   * @return fieldName
+   * Get with
+   * @return with
   **/
-  @ApiModelProperty(example = "comment", required = true, value = "name of field")
-  public String getFieldName() {
-    return fieldName;
+  @ApiModelProperty(required = true, value = "", position = 2)
+  public List<QueryWith> getWith() {
+    return with;
   }
 
-  public void setFieldName(String fieldName) {
-    this.fieldName = fieldName;
+  public void setWith(List<QueryWith> with) {
+    this.with = with;
   }
 
-  public Query nlpExpression(NlpExpression nlpExpression) {
-    this.nlpExpression = nlpExpression;
+  public Query select(List<String> select) {
+    this.select = select;
+    return this;
+  }
+
+  public Query addSelectItem(String selectItem) {
+    this.select.add(selectItem);
     return this;
   }
 
    /**
-   * NLP expression to generate query
-   * @return nlpExpression
+   * Get select
+   * @return select
   **/
-  @ApiModelProperty(required = true, value = "NLP expression to generate query")
-  public NlpExpression getNlpExpression() {
-    return nlpExpression;
+  @ApiModelProperty(example = "[\"r.@id\",\"r.text.SentimentAnalysis.Sentiment\",\"r.text.NamedEntityRecognition.NamedEntity\"]", required = true, value = "",position = 3)
+  public List<String> getSelect() {
+    return select;
   }
 
-  public void setNlpExpression(NlpExpression nlpExpression) {
-    this.nlpExpression = nlpExpression;
+  public void setSelect(List<String> select) {
+    this.select = select;
+  }
+
+  public Query where(NlpExpression where) {
+    this.where = where;
+    return this;
+  }
+
+   /**
+   * Get where
+   * @return where
+  **/
+  @ApiModelProperty(example = "",required = true, value = "", position = 4)
+  public NlpExpression getWhere() {
+    return where;
+  }
+
+  public void setWhere(NlpExpression where) {
+    this.where = where;
   }
 
 
@@ -79,25 +135,36 @@ public class Query {
       return false;
     }
     Query query = (Query) o;
-    return Objects.equals(this.entityType, query.entityType) &&
-        Objects.equals(this.fieldName, query.fieldName) &&
-        Objects.equals(this.nlpExpression, query.nlpExpression);
+    return Objects.equals(this.from, query.from) &&
+        Objects.equals(this.with, query.with) &&
+        Objects.equals(this.select, query.select) &&
+        Objects.equals(this.where, query.where);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(entityType, fieldName, nlpExpression);
+    return Objects.hash(from, with, select, where);
   }
 
 
   @Override
   public String toString() {
+	
+	ListIterator<String> selectIterator = select.listIterator();
+	 
+	String selectStr = "";
+	while(selectIterator.hasNext()) {
+		 selectStr = selectStr + "\"" + selectIterator.next() + "\",";
+	}
+	selectStr = selectStr.substring(0, selectStr.length()-1);
+	
     StringBuilder sb = new StringBuilder();
-    sb.append("class Query {\n");
+    sb.append("{\n");
     
-    sb.append("    entityType: ").append(toIndentedString(entityType)).append("\n");
-    sb.append("    fieldName: ").append(toIndentedString(fieldName)).append("\n");
-    sb.append("    nlpExpression: ").append(toIndentedString(nlpExpression)).append("\n");
+    sb.append("    \"from\": ").append(toIndentedString(from)).append(",\n");
+    sb.append("    \"with\": ").append(toIndentedString(with)).append(",\n");
+    sb.append("    \"select\": [").append(selectStr).append("],\n");
+    sb.append("    \"where\": ").append(toIndentedString(where)).append("\n");
     sb.append("}");
     return sb.toString();
   }
@@ -114,3 +181,4 @@ public class Query {
   }
 
 }
+
