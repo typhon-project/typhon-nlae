@@ -46,8 +46,8 @@ public class Chunking {
 			String docId = "text"; // arbitrary string identifier
 	        //String textId = "body"; // arbitrary string identifier
 	        result = "[";
-	        // Define the desired NLP View
 	        
+	        // Define the desired NLP View
 	        pipeline = PipelineFactory.buildPipeline(ViewNames.POS, ViewNames.SHALLOW_PARSE);
 	        
 	        // Annotate the input
