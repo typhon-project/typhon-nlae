@@ -33,6 +33,7 @@ echo "Starting Typhon-NLAE"
 
 echo "--------------------"
 
+#Wait for all services to start before running the Flink Job Jar
 sleep 120s
 
 docker exec -it $(docker ps --filter name=Typhon-NLAE_jobmanager -l --format={{.ID}}) /bin/bash /opt/flink/bin/flink run -c typhon.nlae.jobs.manager.JobManager /tmp/typhon-nlae-job-manager.jar
