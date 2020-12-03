@@ -1,3 +1,25 @@
+/*******************************************************************************
+ * Copyright (C) 2020 Edge Hill University
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ ******************************************************************************/
+
 package typhon.nlae.jobs.manager;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -23,12 +45,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
-/**
- * This JobManager class encapsulates a Flink Queue for NLAE job processing
- * @author Raja Muhammad Suleman
- * @author Mostafa Alwash 
- * @version 1.0
- */
 @SuppressWarnings("deprecation")
 public class JobManager {
 
@@ -72,7 +88,7 @@ public class JobManager {
                 rmqQueue,
                 new SimpleStringSchema()));
 
-        DataStream<JsonObject> input = dataStream.flatMap(new NlpProcessingMapper());
+        DataStream<String> input = dataStream.flatMap(new NlpProcessingMapper());
         
         input.addSink(esSink);
 		env.execute("Typhon NLAE Job Manager");
@@ -81,7 +97,7 @@ public class JobManager {
 	/**
 	 * NlpProcessingMapper associates HTTP requests to NLP functions via document attribute checking  
 	 */
-	public static class NlpProcessingMapper extends RichFlatMapFunction<String,  JsonObject> {
+	public static class NlpProcessingMapper extends RichFlatMapFunction<String,  String> {
     	/**
 		 * Default Serial Version
 		 */
@@ -95,92 +111,97 @@ public class JobManager {
 		}
     	
     	@Override
-        public void flatMap(String value, Collector<JsonObject> out) {
+        public void flatMap(String value, Collector<String> out) {
     		String nlpTask = "";
     		String workflowName = "";
-    		String key = "";
     		new ObjectMapper();
         	try {
        		
-        		JsonElement jsonEntity =  new JsonParser().parse(value);
-        		JsonObject processedEntity = jsonEntity.getAsJsonObject();
-        		nlpTask = processedEntity.get("nlpFeatures").getAsString();
-        		workflowName = processedEntity.get("workflowNames").getAsString();
-        		logger.info("WORKFLOWNAME: "+ workflowName);
-        		String documentText = processedEntity.get("text").getAsString();
+        		JsonElement inputEntity =  new JsonParser().parse(value);
+        		JsonObject inputObject = inputEntity.getAsJsonObject();
+        		nlpTask = inputObject.get("nlpFeatures").getAsString().toLowerCase();
+        		workflowName = inputObject.get("workflowNames").getAsString();
+        		String documentText = inputObject.get("text").getAsString();
     			String result ="";
     			
     			switch (nlpTask) {
 				case "sentimentanalysis":
 					result = nlpProcessor.getSentiment(documentText, workflowName);
-					key = "SentimentAnalysis";
+					result = "\t\"SentimentAnalysis\" : " + result;
 					break;
 				case "namedentityrecognition":
 					result = nlpProcessor.getNer(documentText, workflowName);
-					key = "NamedEntityRecognition";
+					result =  "\t\"NamedEntityRecognition\" : " + result;
 					break;
 				case "tokenisation":
 					result = nlpProcessor.getTokenise(documentText, workflowName);
-					key = "Tokenisation";
+					result = "\t\"Tokenisation\" : " + result;
 					break;
 				case "sentencesegmentation":
 					result = nlpProcessor.getSentence(documentText, workflowName);
-					key = "SentimentSegmentation";
+					result = "\t\"SentenceSegmentation\" : " + result;
 					break;
 				case "paragraphsegmentation":
 					result = nlpProcessor.getParagraph(documentText, workflowName);
-					key = "ParagraphSegmentation";
+				result = "\t\"ParagraphSegmentation\" : " + result;
 					break;
 				case "phraseextraction":
 					result = nlpProcessor.getPhrase(documentText, workflowName);
-					key = "PhraseExtraction";
+					result = "\t\"PhraseExtraction\" : " + result;
 					break;
 				case "termextraction":
 					result = nlpProcessor.getTerm(documentText, workflowName);
-					key = "TermExtraction";
+					result = "\t\"TermExtraction\" : " + result;
 					break;
 				case "ngramextraction":
 					result = nlpProcessor.getNgram(documentText, workflowName);
-					key = "nGramExtraction";
+					result = "\t\"nGramExtraction\" : " + result;
 					break;
 				case "postagging":
 					result = nlpProcessor.getPos(documentText, workflowName);
-					key = "POSTagging";
+					result = "\t\"POSTagging\" : " + result;
 					break;
 				case "lemmatisation":
 					result = nlpProcessor.getLemma(documentText, workflowName);
-					key = "Lemmatisation";
+					result = "\t\"Lemmatisation\" : " + result;
 					break;
 				case "stemming":
 					result = nlpProcessor.getStemming(documentText, workflowName);
-					key = "Stemming";
+					result = "\t\"Stemming\" : " + result;
 					break;
 				case "dependencyparsing":
 					result = nlpProcessor.getDependency(documentText, workflowName);
-					key = "DependencyParsing";
+					result = "\t\"DependencyParsing\" : " + result;
 					break;
 				case "coreferenceresolution":
 					result = nlpProcessor.getCoreference(documentText, workflowName);
-					key = "CoreferenceResolution";
+					result = "\t\"CoreferenceResolution\" : " + result;
 					break;
 				case "relationextraction":
 					result = nlpProcessor.getRelation(documentText, workflowName);
-					key = "RelationExtraction";
+					result = "\t\"RelationExtraction\" : " + result;
 					break;
 				case "chunking":
 					result = nlpProcessor.getChunking(documentText, workflowName);
-					key = "Chunking";
+					result = "\t\"Chunking\" : " + result;
 					break;
 				default:
 					break;
 				}
+    		
+    			//Generate result Json String
+    			String jsonString = "";
+    			jsonString = "{\n" + "\t\"id\" : \"" + inputObject.get("id").getAsString() + "\",\n";
+    			jsonString = jsonString + "\t\"entityType\" : \"" + inputObject.get("entityType").getAsString() + "\",\n";
+    			jsonString = jsonString + "\t\"" + inputObject.get("fieldName").getAsString() + "\" : {\n";
+    			jsonString = jsonString + result;
+    			jsonString = jsonString.substring(0,jsonString.length() - 2);
+    			jsonString = jsonString + "\t}\n}";
     			
-    			JsonElement jsonElement = new JsonParser().parse(result);
-    			jsonEntity.getAsJsonObject().add(key,jsonElement);
+    			out.collect(jsonString);
     			
-    			processedEntity = jsonEntity.getAsJsonObject();
-    	        out.collect(processedEntity);
     		}catch (Exception e) {
+    			e.printStackTrace();
 				logger.error("Exception occurred while processing entity "+e.getMessage());
 				
 				

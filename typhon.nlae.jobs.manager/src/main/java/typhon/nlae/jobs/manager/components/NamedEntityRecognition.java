@@ -1,26 +1,46 @@
+/*******************************************************************************
+ * Copyright (C) 2020 Edge Hill University
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ ******************************************************************************/
+
 package typhon.nlae.jobs.manager.components;
 
+import java.io.FileReader;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
+import au.com.bytecode.opencsv.CSVReader;
 import edu.stanford.nlp.pipeline.CoreDocument;
 import edu.stanford.nlp.pipeline.CoreEntityMention;
 import edu.stanford.nlp.pipeline.StanfordCoreNLP;
 
 import typhon.nlae.jobs.manager.utils.AlphaBankNER;
 
-/**
- * This NamedEntityRecognition class provides Named-Entity Recognition Nlp functionality  
- * @author Raja Muhammad Suleman
- * @author Mostafa Alwash 
- * @version 1.0
- */
 public class NamedEntityRecognition {
 	
 	private StanfordCoreNLP pipeline;
 	private static StanfordCoreNLP atbPipeline;
 	
 	private CoreDocument document;
-	
+	private Map<String,String> geocodes = new HashMap<String, String>();
 	public NamedEntityRecognition() {
 		try {
 			//Default NER pipeline
@@ -29,6 +49,14 @@ public class NamedEntityRecognition {
 	        pipeline = new StanfordCoreNLP(props);	
 	        
 	        atbPipeline = null;
+	        
+	        CSVReader reader = new CSVReader(new FileReader("/opt/flink/plugins/DE.txt"), '\t');
+	        
+	        String[] record;
+	        
+	        while ((record = reader.readNext()) != null) {
+	        	geocodes.put(record[1], record[2]+","+record[3]);
+	        }
 	        
 	   } catch (Exception e) {
 			System.out.println("Error in initialization");
@@ -65,16 +93,27 @@ public class NamedEntityRecognition {
 			
 			//Results for Default and ATB Classifiers
 			if(!workflowName.equalsIgnoreCase("alpha_bank_ner")) {
-				for (CoreEntityMention em : document.entityMentions()) {
-		            result = result +"{\"begin\" : " + em.charOffsets().first + ",\"end\" : " + em.charOffsets().second + ",\"NamedEntity\" : \"" + em.entityType() + "\",\"WordToken\" : \""+ em.text() + "\" },";
-		        }
+				if(workflowName.equalsIgnoreCase("atb_weather_ner")) {
+					for (CoreEntityMention em : document.entityMentions()) {
+						if(em.entityType().equalsIgnoreCase("LOCATION") && geocodes.containsKey(em.text())) {
+							result = result +"{\"begin\" : " + em.charOffsets().first + ",\"end\" : " + em.charOffsets().second + ",\"NamedEntity\" : \"" + em.entityType() + "\",\"WordToken\" : \""+ em.text() + "\",\"GeoCode\" : \"" + geocodes.get(em.text()) + "\" },";
+						}
+						else	
+							result = result +"{\"begin\" : " + em.charOffsets().first + ",\"end\" : " + em.charOffsets().second + ",\"NamedEntity\" : \"" + em.entityType() + "\",\"WordToken\" : \""+ em.text() + "\",\"GeoCode\" : \"0.00,0.00\" },";
+			        }
+				}
+				else {
+					for (CoreEntityMention em : document.entityMentions()) {
+			            result = result +"{\"begin\" : " + em.charOffsets().first + ",\"end\" : " + em.charOffsets().second + ",\"NamedEntity\" : \"" + em.entityType() + "\",\"WordToken\" : \""+ em.text() + "\" },";
+			        }
+				}
 			}
 			
 	        
 			if(result.length()>10)
-	        	result = result.substring(0,result.length()-1) + "]";
+	        	result = result.substring(0,result.length()-1) + "],\n";
 	        else
-	        	result = result+"]";
+	        	result = result+"],\n";
 			
 		}catch(Exception e) {
 			System.out.println("Excpetion occurred while performing Named Entity Recognition Task : "+e.getMessage());
