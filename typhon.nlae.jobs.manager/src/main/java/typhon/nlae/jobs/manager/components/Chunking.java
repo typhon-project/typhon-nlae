@@ -28,7 +28,6 @@ import edu.illinois.cs.cogcomp.core.datastructures.ViewNames;
 import edu.illinois.cs.cogcomp.core.datastructures.textannotation.Constituent;
 import edu.illinois.cs.cogcomp.core.datastructures.textannotation.SpanLabelView;
 import edu.illinois.cs.cogcomp.core.datastructures.textannotation.TextAnnotation;
-//import edu.illinois.cs.cogcomp.core.datastructures.textannotation.TokenLabelView;
 import edu.illinois.cs.cogcomp.pipeline.main.PipelineFactory;
 
 public class Chunking {
@@ -60,14 +59,10 @@ public class Chunking {
 	        
 	        SpanLabelView pos = (SpanLabelView) ta.getView(ViewNames.POS);
 	        
-	        /*TokenLabelView token =
-	                (TokenLabelView) ta.getView(ViewNames.TOKENS_GOLD);*/
-	        List<Constituent> shallowParseConstituents = shallowParseView
+	          List<Constituent> shallowParseConstituents = shallowParseView
 	                .getConstituents();
 	        for (Constituent c : shallowParseConstituents) {
-	        	//TokenLabelView posView = (TokenLabelView) ta.getView(ViewNames.POS);
-
-	        	for (int i = 0; i < ta.size(); i++) {
+	           	for (int i = 0; i < ta.size(); i++) {
 	        		result = result +"{\"begin\" : " + c.getStartCharOffset() + ",\"end\" : " + c.getEndCharOffset() + ",\"TokenAnnotation\" : [{\"begin\" : " + input.indexOf(ta.getToken(i)) + ",\"end\" : " + input.lastIndexOf(ta.getToken(i)) + ",\"Token\" : \"" + ta.getToken(i) + "\"}]," + "\"PosAnnotation\" : [{\"begin\" : " + c.getStartSpan() + ",\"end\" : " + c.getEndSpan() + ",\"PosValue\" : \"" + ta.getToken(i) + "\",\"PosTag\" : \"" + pos.getLabel(i) +"\"}], \"Label\" : \"" + c.getLabel() + "\"},";
 	        		hasResult = true;
 	        	}
