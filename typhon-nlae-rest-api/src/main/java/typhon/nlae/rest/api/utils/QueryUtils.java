@@ -64,9 +64,13 @@ import typhon.nlae.rest.api.models.TargetEntity;
 import typhon.nlae.rest.api.models.TermExtraction;
 import typhon.nlae.rest.api.models.TokenAnnotation;
 import typhon.nlae.rest.api.models.Tokenisation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class QueryUtils {
 
+	private static final Logger logger = LoggerFactory.getLogger(QueryUtils.class);
+	
 	public static List<String> parseNlpExpression(String jsonString) throws JsonMappingException, JsonProcessingException {
 		ObjectMapper jsonMapper = new ObjectMapper();
 		jsonMapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
@@ -80,7 +84,7 @@ public class QueryUtils {
 		entityType = query.getFrom().getEntity().toLowerCase();
 		resultString.add(entityType);
 		alias = query.getFrom().getNamed();
-		
+		resultString.add(alias);
 		queryString = queryString+"SELECT ";
 		selectList = query.getSelect();
 		if(selectList.size() == 1 && selectList.get(0) == "*") {
@@ -124,6 +128,9 @@ public class QueryUtils {
 		    		valList.add(explodedValue[1]);
 		    	else if(explodedValue[0].equalsIgnoreCase("path")){
 		    		String path = explodedValue[1];
+		    		if(path.equalsIgnoreCase(alias+".@id"))
+		    			path = path.replace("@","");
+		    		
 		    		pathList.add(path);
 		    	}
 		    	else if(explodedValue[0].equalsIgnoreCase("op")) {
@@ -165,8 +172,12 @@ public class QueryUtils {
 		    			tmpValue = "-" + tmpValue;
 		    			valList.set(valList.size()-1, tmpValue);
 		    		}
-		    		else
-		    			opList.add(explodedValue[1]);
+		    		else {
+		    			if(explodedValue[1].equals("=="))
+		    				opList.add("=");
+		    			else
+		    				opList.add(explodedValue[1]);
+		    		}
 		    	}
 		    }
 		    if(opList.size()>0) {
@@ -174,8 +185,7 @@ public class QueryUtils {
 		    }
 		}catch (Exception e) {
 			// TODO: handle exception
-			System.out.println("Error: "+e.getMessage());
-			
+			logger.error(e.getMessage());
 		}
 		
 		queryString = queryString + whereClauseString;
@@ -187,16 +197,26 @@ public class QueryUtils {
 	
 	private static void parseNestedJson(final JsonNode node, Stack<String> qStack) throws IOException {
 	    Iterator<Map.Entry<String, JsonNode>> fieldsIterator = node.fields();
-	    
+	    String lastKey = "";
+	    String lastValue = "";
 	    while (fieldsIterator.hasNext()) {
 	        Map.Entry<String, JsonNode> field = fieldsIterator.next();
 	        final String key = field.getKey();
 	        final JsonNode value = field.getValue();
 	        if (value.isContainerNode()) {
 	            parseNestedJson(value, qStack); // RECURSIVE CALL
-	        } else {
+	        } 
+	        else {
 	        	if(!key.equalsIgnoreCase("type"))
 	        		qStack.push(key+":"+value.asText());
+	        	
+	        	//Add qoutes to @id parameter
+	        	if(key.equals("type") && value.asText().equals("uuid")  || value.asText().equals("string")) {
+	        		qStack.pop();
+	        		qStack.push(lastKey+":'"+lastValue+"'");
+	        	}
+	        	lastKey = key;
+	        	lastValue = value.asText();
 	        }
 	    }
 	}
@@ -213,6 +233,7 @@ public class QueryUtils {
 			dslQuery = jsonObj.toString();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
 			e.printStackTrace();
 		}
 		
@@ -232,8 +253,8 @@ public class QueryUtils {
 				Iterator<Map.Entry<String,JsonNode>> fieldsIterator = rootNode.fields();
 				while (fieldsIterator.hasNext()) {
 					Map.Entry<String,JsonNode> field = fieldsIterator.next();
-					if(field.getKey().equals("id")) {
-						if(headertag.equalsIgnoreCase("id")) {
+					if(field.getKey().equals("id") || field.getKey().equals("@id")) {
+						if(headertag.equalsIgnoreCase("id") || headertag.equalsIgnoreCase("@id")) {
 							result.add(field.getValue().asText());
 						}
 					}
@@ -261,9 +282,15 @@ public class QueryUtils {
 										wordTokens = wordTokens + "\"" + nerValues.get(i).getWordToken() + "\",";
 								}
 								
+								String points = "";
+								String[] pointsExp;
 								for(int i=0;i<nerValues.size();i++) {
-									if(null != nerValues.get(i).getGeoCode())
-										geoCodes = geoCodes + "\"" + nerValues.get(i).getGeoCode() + "\",";
+									if(null != nerValues.get(i).getGeoCode()) {
+										points = nerValues.get(i).getGeoCode();
+										pointsExp = points.split(",");
+										geoCodes = geoCodes + "POINT(" + pointsExp[0] + " " + pointsExp[1] +"),";
+									}
+										
 								}
 								
 								for(int i=0;i<nerValues.size();i++) {
@@ -1059,6 +1086,7 @@ public class QueryUtils {
 				}
 			}catch (Exception e) {
 				// TODO: handle exception
+				logger.error(e.getMessage());
 			}
 		}
 		return result;

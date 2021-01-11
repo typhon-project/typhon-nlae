@@ -191,7 +191,7 @@ public class Endpoint {
 		resultString = QueryUtils.parseNlpExpression(nlpExpression);
 		
 		String includeFields = "\"includes\":[";
-		for(int k =1;k<resultString.size()-1; k++) {
+		for(int k =2;k<resultString.size()-1; k++) {
 			includeFields = includeFields + "\"" + resultString.get(k).substring(resultString.get(k).indexOf(".")+1) + "\",";
 		}
 		includeFields = includeFields.substring(0, includeFields.length()-1) + "]";
@@ -213,12 +213,14 @@ public class Endpoint {
 		
 		List<String> headerList = new ArrayList<String>();
 		
-		for(int i =1; i<resultString.size()-1;i++)
+		for(int i =2; i<resultString.size()-1;i++)
 		{
-			headerList.add(resultString.get(i).toString());
+			if(resultString.get(i).equals(resultString.get(1)+".id"))
+				headerList.add(resultString.get(1)+".@id");
+			else
+				headerList.add(resultString.get(i).toString());
 		}
 		queryResponse.setHeader(headerList);
-		
 		
 		List<String> records = new ArrayList<String>();
 		hits = jsonResult.getJSONObject("hits");
