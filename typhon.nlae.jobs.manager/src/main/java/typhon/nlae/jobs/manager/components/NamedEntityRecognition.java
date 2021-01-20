@@ -95,54 +95,55 @@ public class NamedEntityRecognition {
 	        String lastTag = "";
 	        int lastBegin = 0;
 	        int lastEnd = 0;
-		//Results for Default and ATB Classifiers
-		if(!workflowName.equalsIgnoreCase("alpha_bank_ner")) {
-			if(workflowName.equalsIgnoreCase("atb_weather_ner")) {
-				for (CoreEntityMention em : document.entityMentions()) {
-					if(em.entityType().equalsIgnoreCase("LOCATION") && geocodes.containsKey(em.text())) {
-						result = result +"{\"begin\" : " + em.charOffsets().first + ",\"end\" : " + em.charOffsets().second + ",\"NamedEntity\" : \"" + em.entityType() + "\",\"WordToken\" : \""+ em.text() + "\",\"GeoCode\" : \"" + geocodes.get(em.text()) + "\" },";
-					}
-					else {//Handling Date Format	
-						if(em.entityType().equalsIgnoreCase("DATE")) {
-							if(lastTag.equalsIgnoreCase("")) {
-								lastTag = "DATE";
-								lastVal = em.text();
-								lastBegin = em.charOffsets().first;
-								lastEnd = em.charOffsets().second;
+			
+	        //Results for Default and ATB Classifiers
+			if(!workflowName.equalsIgnoreCase("alpha_bank_ner")) {
+				if(workflowName.equalsIgnoreCase("atb_weather_ner")) {
+					for (CoreEntityMention em : document.entityMentions()) {
+						if(em.entityType().equalsIgnoreCase("LOCATION") && geocodes.containsKey(em.text())) {
+							result = result +"{\"begin\" : " + em.charOffsets().first + ",\"end\" : " + em.charOffsets().second + ",\"NamedEntity\" : \"" + em.entityType() + "\",\"WordToken\" : \""+ em.text() + "\",\"GeoCode\" : \"" + geocodes.get(em.text()) + "\" },";
+						}
+						else {//Handling Date Format	
+							if(em.entityType().equalsIgnoreCase("DATE")) {
+								if(lastTag.equalsIgnoreCase("")) {
+									lastTag = "DATE";
+									lastVal = em.text();
+									lastBegin = em.charOffsets().first;
+									lastEnd = em.charOffsets().second;
+								}
+								else {
+									if(lastTag.equalsIgnoreCase("DATE")) {
+										result = result +"{\"begin\" : " + lastBegin + ",\"end\" : " + em.charOffsets().second + ",\"NamedEntity\" : \"" + em.entityType() + "\",\"WordToken\" : \""+ lastVal + " " + em.text() + "\",\"GeoCode\" : \"0.00,0.00\" },";
+										lastTag = "";
+										lastVal = "";
+									}
+								}
+	
 							}
 							else {
 								if(lastTag.equalsIgnoreCase("DATE")) {
-									result = result +"{\"begin\" : " + lastBegin + ",\"end\" : " + em.charOffsets().second + ",\"NamedEntity\" : \"" + em.entityType() + "\",\"WordToken\" : \""+ lastVal + " " + em.text() + "\",\"GeoCode\" : \"0.00,0.00\" },";
+									result = result +"{\"begin\" : " + lastBegin + ",\"end\" : " + lastEnd + ",\"NamedEntity\" : \"" + lastTag + "\",\"WordToken\" : \""+ lastVal + "\",\"GeoCode\" : \"0.00,0.00\" },";
 									lastTag = "";
 									lastVal = "";
 								}
+								result = result +"{\"begin\" : " + em.charOffsets().first + ",\"end\" : " + em.charOffsets().second + ",\"NamedEntity\" : \"" + em.entityType() + "\",\"WordToken\" : \""+ em.text() + "\",\"GeoCode\" : \"0.00,0.00\" },";
 							}
-
+	
 						}
-						else {
-							if(lastTag.equalsIgnoreCase("DATE")) {
-								result = result +"{\"begin\" : " + lastBegin + ",\"end\" : " + lastEnd + ",\"NamedEntity\" : \"" + lastTag + "\",\"WordToken\" : \""+ lastVal + "\",\"GeoCode\" : \"0.00,0.00\" },";
-								lastTag = "";
-								lastVal = "";
-							}
-							result = result +"{\"begin\" : " + em.charOffsets().first + ",\"end\" : " + em.charOffsets().second + ",\"NamedEntity\" : \"" + em.entityType() + "\",\"WordToken\" : \""+ em.text() + "\",\"GeoCode\" : \"0.00,0.00\" },";
-						}
-
+					}
+				}
+				else {
+					for (CoreEntityMention em : document.entityMentions()) {
+				    		result = result +"{\"begin\" : " + em.charOffsets().first + ",\"end\" : " + em.charOffsets().second + ",\"NamedEntity\" : \"" + em.entityType() + "\",\"WordToken\" : \""+ em.text() + "\" },";
 					}
 				}
 			}
-			else {
-				for (CoreEntityMention em : document.entityMentions()) {
-			    		result = result +"{\"begin\" : " + em.charOffsets().first + ",\"end\" : " + em.charOffsets().second + ",\"NamedEntity\" : \"" + em.entityType() + "\",\"WordToken\" : \""+ em.text() + "\" },";
-				}
-			}
-		}
 
 
-		if(result.length()>10)
-			result = result.substring(0,result.length()-1) + "],\n";
-	        else
-	        	result = result+"],\n";
+			if(result.length()>10)
+				result = result.substring(0,result.length()-1) + "],\n";
+		        else
+		        	result = result+"],\n";
 			
 		}catch(Exception e) {
 			System.out.println("Excpetion occurred while performing Named Entity Recognition Task : "+e.getMessage());
