@@ -36,83 +36,53 @@ The models associated with the **Endpoints** are presented below.
 
 ```json
 {
-        "entityType" : "review",
-        "fieldName" : "comment",
-        "nlpExpression" : { 
-            "from": { 
-                "entity": "Review", 
-                "named": "r" 
-            }, 
-            "with": [{ 
-                "path": "r.text.SentimentAnaylsis", 
-                "wflow": "wflow1" 
-            }, { 
-                "path": "r.text.NamedEntityRecognition", 
-                "wflow": "wflow2" 
-            }], 
-            "select": ["r.@id", "r.text.SentimentAnalysis.Sentiment", "r.text.NamedEntityRecognition.NamedEntity"], 
-            "where": [{ 
-                "op": ">", 
-                "lhs": { 
-                    "attr": "r.text.SentimentAnalysis.Sentiment" 
-                }, 
-            "rhs": { 
-                    "lit": "1", 
-                    "type": "int" 
-                } 
-            }, { 
-                "op": "in", 
-                "rhs": { 
-                    "lit": "('TITLE','MISC')", 
-                    "type": "String" 
-                }, 
-                "lhs": { 
-                    "attr": "r.text.NamedEntityRecognition.NamedEntity" 
-                } 
-            }] 
-        }
-    }
-```
-* For more than 2 queries add a "query-op" property between the query conditions:
-
-```json
-....
-"where": [{
+    "from": {
+        "entity": "Company",
+        "named": "c"
+    },
+    "with": [{
+        "path": "c.mission.SentimentAnalysis",
+        "wflow": "eng_spa"
+    }],
+    "select": ["c.@id", "c.mission.SentimentAnalysis.Sentiment"],
+    "where": {
+        "binaryExpression": {
+            "op": "&&",
+            "lhs": {
+                "binaryExpression": {
                     "op": ">",
                     "lhs": {
-                        "attr": "r.text.SentimentAnalysis.Sentiment"
+                        "attribute": {
+                            "path": "c.mission.SentimentAnalysis.Sentiment"
+                        }
                     },
                     "rhs": {
-                        "lit": "1",
-                        "type": "int"
-                    }
-                }, {
-                    "query-op": "AND"
-                },
-                {
-                    "op": "in",
-                    "rhs": {
-                        "lit": "('TITLE','ORGANIZATION')",
-                        "type": "String"
-                    },
-                    "lhs": {
-                        "attr": "r.text.NamedEntityRecognition.NamedEntity"
-                    }
-                }, {
-                    "query-op": "OR"
-                },
-                {
-                    "op": "in",
-                    "rhs": {
-                        "lit": "('Doctor','Tesla')",
-                        "type": "String"
-                    },
-                    "lhs": {
-                        "attr": "r.text.NamedEntityRecognition.WordToken"
+                        "literal": {
+                            "value": 1,
+                            "type": "int"
+                        }
                     }
                 }
-            ]
-.....
+            },
+            "rhs": {
+                "binaryExpression": {
+                    "op": "<",
+                    "lhs": {
+                        "attribute": {
+                            "path": "c.mission.SentimentAnalysis.Sentiment"
+                        }
+                    },
+                    "rhs": {
+                        "literal": {
+                            "value": 4,
+                            "type": "int"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
 ```
 
 ### Delete
@@ -160,7 +130,9 @@ Below is the current list of `NlpTaskTypes` supported in Typhon.
 
 - CoreferenceResolution
 
-  
+## Use Case specific Workflow Names
+- ATB Weather NER -> "atb_weather_ner"
+- AlphaBank NER   -> "alpha_bank_ner"
 
 ## Documentation
 
