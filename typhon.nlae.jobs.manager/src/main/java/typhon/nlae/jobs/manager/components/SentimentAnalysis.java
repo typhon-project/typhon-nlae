@@ -1,6 +1,25 @@
-/**
+/*******************************************************************************
+ * Copyright (C) 2020 Edge Hill University
  * 
- */
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ ******************************************************************************/
+
 package typhon.nlae.jobs.manager.components;
 
 import java.util.Properties;
@@ -13,12 +32,6 @@ import edu.stanford.nlp.sentiment.SentimentCoreAnnotations;
 import edu.stanford.nlp.trees.Tree;
 import edu.stanford.nlp.util.CoreMap;
 
-/**
- * This SentimentAnalysis class provides sentiment socring Nlp functionality  
- * @author Raja Muhammad Suleman
- * @author Mostafa Alwash 
- * @version 1.0
- */
 public class SentimentAnalysis {
 
 	private StanfordCoreNLP pipeline;
@@ -54,11 +67,29 @@ public class SentimentAnalysis {
             if(count>0)
             	overallSentiment = Math.ceil((double)sentenceSentiment/count);
             
-			result = result+"[{\"Sentiment\": \"" + (int)overallSentiment  + "\"}]";
-			
+            String sentimentLabel = "";
+            switch ((int)overallSentiment) {
+            case 0:
+              sentimentLabel = "Very Negative";
+              break;
+            case 1:
+              sentimentLabel = "Negative";
+              break;
+            case 2:
+            	sentimentLabel = "Neutral";
+              break;
+            case 3:
+            	sentimentLabel = "Postive";
+              break;
+            case 4:
+            	sentimentLabel = "Very Positive";
+              break;
+            }
+            
+			result = result+"[{\"Sentiment\": " + (int)overallSentiment  + ",\"SentimentLabel\": \"" + sentimentLabel + "\"}],\n";
 			
         }catch(Exception e) {
-    	   
+        	System.out.println("Excpetion occurred while performing Sentiment Analysis Task : "+e.getMessage());
         }
 		return result;
 	}
