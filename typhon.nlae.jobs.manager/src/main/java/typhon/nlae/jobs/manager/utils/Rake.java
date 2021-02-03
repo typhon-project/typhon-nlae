@@ -1,11 +1,3 @@
-package typhon.nlae.jobs.manager.utils;
-
-
-import org.apache.commons.lang3.StringUtils;
-
-import java.io.*;
-import java.util.*;
-
 /**
  * Rapid Automatic Keyword Extraction (RAKE)
  * =========================================
@@ -16,6 +8,15 @@ import java.util.*;
  *
  * Implementation based on https://github.com/aneesha/RAKE
  */
+
+package typhon.nlae.jobs.manager.utils;
+
+
+import org.apache.commons.lang3.StringUtils;
+
+import java.io.*;
+import java.util.*;
+
 public class Rake {
     String language;
     String stopWordsPattern;

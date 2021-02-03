@@ -1,3 +1,13 @@
+/**
+ * Stemmer, implementing the Porter Stemming Algorithm
+ * <br>
+ * The Stemmer class transforms a word into its root form.  The input
+ * word can be provided a character at time (by calling add()), or at once
+ * by calling one of the various stem(something) methods.
+ *
+ * @author Sepandar Kamvar (sdkamvar@stanford.edu)
+ */
+
 package typhon.nlae.jobs.manager.utils;
 
 
@@ -9,16 +19,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Iterator;
 import java.util.function.Function;
-
-/**
- * Stemmer, implementing the Porter Stemming Algorithm
- * <br>
- * The Stemmer class transforms a word into its root form.  The input
- * word can be provided a character at time (by calling add()), or at once
- * by calling one of the various stem(something) methods.
- *
- * @author Sepandar Kamvar (sdkamvar@stanford.edu)
- */
 
 public class Stemmer implements Function<Word,Word> {
     private char[] b;

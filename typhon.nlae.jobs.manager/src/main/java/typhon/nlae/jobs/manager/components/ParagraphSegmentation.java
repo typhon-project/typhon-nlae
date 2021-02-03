@@ -1,6 +1,25 @@
-/**
+/*******************************************************************************
+ * Copyright (C) 2020 Edge Hill University
  * 
- */
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ ******************************************************************************/
+
 package typhon.nlae.jobs.manager.components;
 
 import org.apache.uima.UIMAFramework;
@@ -9,17 +28,9 @@ import org.apache.uima.fit.factory.AnalysisEngineFactory;
 import org.apache.uima.fit.factory.JCasFactory;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
-import org.apache.uima.resource.ResourceInitializationException;
-
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Paragraph;
 import de.tudarmstadt.ukp.dkpro.core.tokit.ParagraphSplitter;
 
-/**
- * This ParagraphSegmentation class provides paragraph spliting Nlp functionality  
- * @author Raja Muhammad Suleman
- * @author Mostafa Alwash 
- * @version 1.0
- */
 public class ParagraphSegmentation {
 
 	private AnalysisEngine ae;
@@ -34,10 +45,10 @@ public class ParagraphSegmentation {
 			result = "[";
 			
 			// Define Paragraph Splitting criteria
-						AnalysisEngine ae =
-						        UIMAFramework.produceAnalysisEngine(AnalysisEngineFactory.createEngineDescription(ParagraphSplitter.class,
-						                ParagraphSplitter.PARAM_SPLIT_PATTERN,
-						                ParagraphSplitter.DOUBLE_LINE_BREAKS_PATTERN));
+			AnalysisEngine ae =
+			        UIMAFramework.produceAnalysisEngine(AnalysisEngineFactory.createEngineDescription(ParagraphSplitter.class,
+			                ParagraphSplitter.PARAM_SPLIT_PATTERN,
+			                ParagraphSplitter.DOUBLE_LINE_BREAKS_PATTERN));
 			// Declare UIMA object
 			JCas source = JCasFactory.createJCas();
 	        source.setDocumentText(input);
@@ -50,11 +61,11 @@ public class ParagraphSegmentation {
 	        }
 			
 	        if(hasResult)
-	        	result = result.substring(0,result.length()-1) + "]";
+	        	result = result.substring(0,result.length()-1) + "],\n";
 	        else
-	        	result = result+"]";
+	        	result = result+"],\n";
 		}catch(Exception e) {
-			System.out.println("Excpetion occurred while performing Named Entity Recognition Task : "+e.getMessage());
+			System.out.println("Excpetion occurred while performing Paragraph Segmentation Task : "+e.getMessage());
 		}
 	    return result;
 	}
