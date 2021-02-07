@@ -54,15 +54,24 @@ public class SentimentAnalysis {
 		int sentenceSentiment = 0;
         int count = 0;
         double overallSentiment = 0;
+        int tmpScore = 0;
         String result = "";
         try {
         	annotation = pipeline.process(input);
         	Tree tree = null;
             for (CoreMap sentence : annotation.get(CoreAnnotations.SentencesAnnotation.class)) {
-            	
+            	tmpScore = 0;
             	tree =  sentence.get(SentimentCoreAnnotations.SentimentAnnotatedTree.class);
-            	sentenceSentiment = sentenceSentiment + RNNCoreAnnotations.getPredictedClass(tree);
-            	count++;
+            	tmpScore = RNNCoreAnnotations.getPredictedClass(tree);
+            	if(tmpScore == 0)
+            		sentenceSentiment = sentenceSentiment - 2;
+            	else if(tmpScore == 1)
+            		sentenceSentiment = sentenceSentiment - 1;
+            	else
+            		sentenceSentiment = sentenceSentiment + tmpScore + 1; 
+            	
+            	if(tmpScore != 2)
+            		count++;
             }
             if(count>0)
             	overallSentiment = Math.ceil((double)sentenceSentiment/count);
