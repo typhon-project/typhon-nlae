@@ -32,9 +32,15 @@ import edu.stanford.nlp.pipeline.CoreDocument;
 import edu.stanford.nlp.pipeline.CoreEntityMention;
 import edu.stanford.nlp.pipeline.StanfordCoreNLP;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import typhon.nlae.jobs.manager.JobManager;
 import typhon.nlae.jobs.manager.utils.AlphaBankNER;
 
 public class NamedEntityRecognition {
+	
+	private static final Logger logger = LoggerFactory.getLogger(NamedEntityRecognition.class);
 	
 	private StanfordCoreNLP pipeline;
 	private static StanfordCoreNLP atbPipeline;
@@ -146,7 +152,7 @@ public class NamedEntityRecognition {
 		        	result = result+"],\n";
 			
 		}catch(Exception e) {
-			System.out.println("Excpetion occurred while performing Named Entity Recognition Task : "+e.getMessage());
+			logger.error("Excpetion occurred while performing Named Entity Recognition Task: " + e.getMessage());
 		}
         return result;
 	}

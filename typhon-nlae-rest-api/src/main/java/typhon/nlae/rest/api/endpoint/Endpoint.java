@@ -32,14 +32,22 @@ import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.elasticsearch.action.ActionListener;
+import org.elasticsearch.action.delete.DeleteRequest;
+import org.elasticsearch.action.delete.DeleteResponse;
+import org.elasticsearch.action.search.SearchRequest;
+import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Request;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.Response;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.MatchQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.reindex.BulkByScrollResponse;
 import org.elasticsearch.index.reindex.DeleteByQueryRequest;
+import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -264,28 +272,42 @@ public class Endpoint {
 	@Async
 	public void delete(@RequestBody Delete delete) throws IOException {
 
-		// Bool Query
-		BoolQueryBuilder boolQuery = new BoolQueryBuilder();
-		boolQuery.must(new MatchQueryBuilder("id", delete.getId()));
+
+		String id = delete.getId();
+		String indexName = delete.getEntityType().toLowerCase();
+		//Check if Document exists
+		SearchRequest searchRequest = new SearchRequest(indexName);
 		
-		// Delete by Query
-		DeleteByQueryRequest request = new DeleteByQueryRequest(delete.getEntityType().toLowerCase());
-		request.setQuery(boolQuery);
-
-		ActionListener<BulkByScrollResponse> listener;
-		listener = new ActionListener<BulkByScrollResponse>() {
-			@Override
-			public void onResponse(BulkByScrollResponse bulkResponse) {
-				logger.info(bulkResponse.getStatus().getDeleted());
-			}
-
-			@Override
-			public void onFailure(Exception e) {
-				logger.error(e);
-			}
-		};
-
-		RESTclient.deleteByQueryAsync(request, RequestOptions.DEFAULT, listener);
+		QueryBuilder matchQueryBuilder = QueryBuilders.matchPhraseQuery("id", id);
+		SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
+		sourceBuilder.query(matchQueryBuilder);
+		searchRequest.source(sourceBuilder);
+		
+		SearchResponse searchResponse = RESTclient.search(searchRequest,RequestOptions.DEFAULT);
+		SearchHit[] hits = searchResponse.getHits().getHits();
+		
+		if(hits.length>0) {
+			//Document exists, Append result
+			String esId = hits[0].getId();
+			
+			DeleteRequest request = new DeleteRequest(indexName,"_doc",esId);  
+			
+			ActionListener<DeleteResponse> listener;
+			
+			listener = new ActionListener<DeleteResponse>() {
+				@Override
+				public void onResponse(DeleteResponse deleteResponse) {
+					logger.info(deleteResponse.getResult());
+				}
+	
+				@Override
+				public void onFailure(Exception e) {
+					logger.error(e);
+				}
+			};
+	
+			RESTclient.deleteAsync(request,RequestOptions.DEFAULT,listener);
+		}
 		
 
 	}

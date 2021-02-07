@@ -114,6 +114,7 @@ public class JobManager {
         public void flatMap(String value, Collector<String> out) {
     		String nlpTask = "";
     		String workflowName = "";
+    		String jsonString = "";
     		new ObjectMapper();
         	try {
        		
@@ -190,7 +191,7 @@ public class JobManager {
 				}
     		
     			//Generate result Json String
-    			String jsonString = "";
+    			jsonString = "";
     			jsonString = "{\n" + "\t\"id\" : \"" + inputObject.get("id").getAsString() + "\",\n";
     			jsonString = jsonString + "\t\"entityType\" : \"" + inputObject.get("entityType").getAsString() + "\",\n";
     			jsonString = jsonString + "\t\"" + inputObject.get("fieldName").getAsString() + "\" : {\n";
@@ -202,7 +203,7 @@ public class JobManager {
     			
     		}catch (Exception e) {
     			e.printStackTrace();
-				logger.error("Exception occurred while processing entity "+e.getMessage());
+				logger.error("Exception occurred while processing entity "+e.getMessage() + "Data:" + jsonString);
 				
 				
 			}    
